@@ -92,8 +92,12 @@ def create_listing(request):
         form = NewListingForm(request.POST)
 
         if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse("index"))
+            listing = form.save()
+            return HttpResponseRedirect(
+                reverse(
+                    "read_listing", args=[listing.id]
+                )
+            )
         else:
             return render(request, "auctions/create_listing.html", {
                 "form": form,
@@ -101,4 +105,16 @@ def create_listing(request):
 
     return render(request, "auctions/create_listing.html", {
         "form": NewListingForm()
+    })
+
+
+def read_listing(request, pk):
+
+    try:
+        listing = Listing.objects.get(pk=pk)
+    except Listing.DoesNotExist:
+        listing = None
+
+    return render(request, "auctions/listing.html", {
+        "listing": listing
     })

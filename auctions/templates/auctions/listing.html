@@ -1,0 +1,15 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    {% if listing %}
+        <h2>{{ listing.title }}</h2>
+        <p>
+            {{ listing.description }}
+        </p>
+        <p>
+            Current Price: {{ listing.current_price }}
+        </p>
+    {% else %}
+        <h2>Does Not Exist</h2>
+    {% endif %}
+{% endblock %}
