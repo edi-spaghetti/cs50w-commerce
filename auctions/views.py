@@ -87,8 +87,17 @@ class NewListingForm(forms.ModelForm):
 
 @login_required
 def create_listing(request):
-    if request.method == 'POST':
-        pass
+    if request.method == "POST":
+
+        form = NewListingForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return render(request, "auctions/create_listing.html", {
+                "form": form,
+            })
 
     return render(request, "auctions/create_listing.html", {
         "form": NewListingForm()
