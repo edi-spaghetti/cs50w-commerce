@@ -79,7 +79,7 @@ def register(request):
 class NewListingForm(forms.ModelForm):
     class Meta:
         model = Listing
-        fields = ("title", "description", "current_price")
+        fields = ("title", "description", "current_price", "photo")
         widgets = {
             "description": forms.Textarea(attrs={"cols": 80, "rows": 20})
         }
@@ -89,7 +89,7 @@ class NewListingForm(forms.ModelForm):
 def create_listing(request):
     if request.method == "POST":
 
-        form = NewListingForm(request.POST)
+        form = NewListingForm(request.POST, request.FILES)
 
         if form.is_valid():
             listing = form.save()

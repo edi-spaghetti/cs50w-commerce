@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from uuid import uuid4
 
 
 class User(AbstractUser):
@@ -12,4 +13,7 @@ class Listing(models.Model):
     current_price = models.IntegerField(verbose_name="Current Price")
 
     # TODO: ImageField
-    # photo = models.ImageField(upload_to=)
+    photo = models.ImageField(
+        upload_to=lambda instance, filename: f"listing/{uuid4().hex}",
+        blank=True
+    )
