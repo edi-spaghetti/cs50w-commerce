@@ -14,9 +14,30 @@
                 <div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
             {% endif %}
         </p>
+        <!--  TODO: calculate max price bid -->
         <p>
-            Current Price: {{ listing.current_price }}
+            Current Price: lots
         </p>
+        <p>
+            Status: {% if listing.is_open %}Open{% else %}Closed{% endif %}
+        </p>
+        {% if user == listing.owner %}
+            {% if listing.is_open %}
+                <form action="{% url 'close_listing' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                    <button class="btn btn-danger" type="submit">Close Auction</button>
+                </form>
+            {% endif %}
+        {% elif user.is_authenticated %}
+            <form action="{% url 'create_bid' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                <input type="number" name="bid">
+                <button class="btn btn-primary" type="submit">Submit Bid</button>
+            </form>
+        {% endif %}
+
     {% else %}
         <h2>Does Not Exist</h2>
     {% endif %}
