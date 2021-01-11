@@ -9,6 +9,7 @@ from django import forms
 from .models import (
     User,
     Listing,
+    Bid,
 )
 
 
@@ -79,7 +80,7 @@ def register(request):
 class NewListingForm(forms.ModelForm):
     class Meta:
         model = Listing
-        fields = ("title", "description", "current_price", "photo")
+        fields = ("title", "description", "starting_bid", "photo")
         widgets = {
             "description": forms.Textarea(attrs={"cols": 80, "rows": 20})
         }
@@ -89,7 +90,10 @@ class NewListingForm(forms.ModelForm):
 def create_listing(request):
     if request.method == "POST":
 
-        form = NewListingForm(request.POST, request.FILES)
+        form = NewListingForm(
+            request.POST, request.FILES,
+            {"owner": request.user}
+        )
 
         if form.is_valid():
             listing = form.save()
@@ -118,3 +122,36 @@ def read_listing(request, pk):
     return render(request, "auctions/listing.html", {
         "listing": listing
     })
+
+
+@login_required
+def close_listing(request):
+
+    if request.method == "POST":
+
+        # TODO: error checking e.g. no listing id submitted /  not found
+        listing = Listing.objects.get(pk=request.POST["listing_id"])
+        if request.user == listing.owner:
+            listing.is_open = False
+            listing.save()
+        else:
+            HttpResponseRedirect(reverse("read_listing"), args=[listing.id])
+
+    else:
+        return HttpResponse("Method not allowed", status=405)
+
+
+@login_required
+def create_bid(request):
+
+    if request.method == "POST":
+
+        # TODO: error checking e.g. no post values submitted /  not found
+        listing = Listing.objects.get(pk=request.POST["listing_id"])
+        bid = Bid({"listing": listing, "bidder": request.user, "value": request.POST["bid"]})
+        if request.user != listing.owner:
+            if bid.is_valid():
+
+
+    else:
+        return HttpResponse("Method not allowed", status=405)

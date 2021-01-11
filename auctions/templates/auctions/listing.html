@@ -17,6 +17,19 @@
         <p>
             Current Price: {{ listing.current_price }}
         </p>
+        {% if user == listing.owner %}
+            <form action="{% url 'close_listing' %}" method="post">
+                <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                <button class="btn btn-danger" type="submit">Close Auction</button>
+            </form>
+        {% elif user.is_authenticated %}
+            <form action="{% url 'create_bid' %}" method="post">
+                <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                <input type="number" name="bid">
+                <button class="btn btn-primary" type="submit">Submit Bid</button>
+            </form>
+        {% endif %}
+
     {% else %}
         <h2>Does Not Exist</h2>
     {% endif %}
