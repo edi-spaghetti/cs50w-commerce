@@ -7,13 +7,16 @@ class User(AbstractUser):
     pass
 
 
+def rename_image_files(instance, filename):
+    return f"listing/{uuid4().hex}"
+
+
 class Listing(models.Model):
     title = models.CharField(max_length=64, verbose_name="Title")
     description = models.CharField(max_length=1000, verbose_name="Description")
     current_price = models.IntegerField(verbose_name="Current Price")
 
-    # TODO: ImageField
     photo = models.ImageField(
-        upload_to=lambda instance, filename: f"listing/{uuid4().hex}",
+        upload_to=rename_image_files,
         blank=True
     )
