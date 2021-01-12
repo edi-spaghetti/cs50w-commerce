@@ -165,13 +165,15 @@ def create_bid(request):
                 {
                     "listing": listing,
                     "bidder": request.user,
-                    "value": request.POST["bid"]
+                    "value": int(request.POST["value"])
                 }
             )
 
             if request.user != listing.owner:
                 if bid.is_valid():
-                    bid.save()
+                    new_value = int(bid.cleaned_data["value"])
+                    if new_value >= listing.new_bid_minimum:
+                        bid.save()
 
         except (Listing.DoesNotExist, KeyError, ValueError):
             # TODO: create 'something went wrong' page before redirect

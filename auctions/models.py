@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import Max
 from uuid import uuid4
 
 
@@ -28,6 +29,30 @@ class Listing(models.Model):
         upload_to=rename_image_files,
         blank=True
     )
+
+    @property
+    def highest_bid(self):
+        """
+        Gets the current highest bid, or if no bids have currently been made,
+        the starting bid
+        :rtype: int
+        """
+        bids = self.bids.values()
+        highest_bid = bids.aggregate(Max("value"))["value__max"]
+        return highest_bid or self.starting_bid
+
+    @property
+    def bid_increment(self):
+        # setting to 1 for now, but potentially this could be configurable
+        # by users for their listings.
+        return 1
+
+    @property
+    def new_bid_minimum(self):
+        """
+        Lowest value a new bid can be created at on the current listing
+        """
+        return self.highest_bid + self.bid_increment
 
 
 class Bid(models.Model):
