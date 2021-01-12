@@ -135,14 +135,19 @@ def close_listing(request):
     if request.method == "POST":
 
         # TODO: error checking e.g. no listing id submitted /  not found
-        listing = Listing.objects.get(pk=request.POST["listing_id"])
-        if request.user == listing.owner:
-            listing.is_open = False
-            listing.save()
+        try:
+            listing = Listing.objects.get(pk=request.POST["listing_id"])
+        except (Listing.DoesNotExist, KeyError, ValueError):
+            # TODO: create 'something went wrong' page before redirect
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            if request.user == listing.owner:
+                listing.is_open = False
+                listing.save()
 
-        return HttpResponseRedirect(
-            reverse("read_listing", args=[listing.id])
-        )
+            return HttpResponseRedirect(
+                reverse("read_listing", args=[listing.id])
+            )
 
     else:
         return HttpResponse("Method not allowed", status=405)
@@ -153,23 +158,27 @@ def create_bid(request):
 
     if request.method == "POST":
 
-        # TODO: error checking e.g. no post values submitted /  not found
-        listing = Listing.objects.get(pk=request.POST["listing_id"])
-        bid = NewBidForm(
-            {
-                "listing": listing,
-                "bidder": request.user,
-                "value": request.POST["bid"]
-            }
-        )
+        try:
+            listing = Listing.objects.get(pk=request.POST["listing_id"])
 
-        if request.user != listing.owner:
-            if bid.is_valid():
-                bid.save()
+            bid = NewBidForm(
+                {
+                    "listing": listing,
+                    "bidder": request.user,
+                    "value": request.POST["bid"]
+                }
+            )
 
-        return HttpResponseRedirect(
-            reverse("read_listing", args=[listing.id]),
-        )
+            if request.user != listing.owner:
+                if bid.is_valid():
+                    bid.save()
 
+        except (Listing.DoesNotExist, KeyError, ValueError):
+            # TODO: create 'something went wrong' page before redirect
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return HttpResponseRedirect(
+                reverse("read_listing", args=[listing.id]),
+            )
     else:
         return HttpResponse("Method not allowed", status=405)
