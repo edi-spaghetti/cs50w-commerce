@@ -127,6 +127,7 @@ def read_listing(request, pk):
     return render(request, "auctions/listing.html", {
         "listing": listing,
         "on_watchlist": listing.watchers.filter(pk=request.user.id).exists(),
+        "insufficient_bid": False,
     })
 
 
@@ -175,6 +176,15 @@ def create_bid(request):
                     new_value = int(bid.cleaned_data["value"])
                     if new_value >= listing.new_bid_minimum:
                         bid.save()
+                    else:
+                        # re-implementing read_listing template render
+                        # so I can pass an error message without having to
+                        return render(request, "auctions/listing.html", {
+                            "listing": listing,
+                            "on_watchlist": listing.watchers.filter(
+                                pk=request.user.id).exists(),
+                            "insufficient_bid": True
+                        })
 
         except (Listing.DoesNotExist, KeyError, ValueError):
             # TODO: create 'something went wrong' page before redirect
