@@ -80,7 +80,7 @@ def register(request):
 class NewListingForm(forms.ModelForm):
     class Meta:
         model = Listing
-        fields = ("title", "description", "starting_bid", "photo")
+        fields = ("title", "description", "starting_bid", "photo", "category")
         widgets = {
             "description": forms.Textarea(attrs={"cols": 80, "rows": 20}),
             "starting_bid": forms.NumberInput(attrs={"min": 1, "step": 1}),

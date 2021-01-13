@@ -8,6 +8,13 @@ class User(AbstractUser):
     pass
 
 
+class Category(models.Model):
+    name = models.CharField(max_length=64, verbose_name="Name")
+
+    def __str__(self):
+        return self.name
+
+
 def rename_image_files(instance, filename):
     return f"listing/{uuid4().hex}"
 
@@ -30,6 +37,14 @@ class Listing(models.Model):
         blank=True
     )
     watchers = models.ManyToManyField(User)
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        verbose_name="Category",
+        related_name="listings",
+        null=True,
+        blank=True,
+    )
 
     @property
     def highest_bid(self):
