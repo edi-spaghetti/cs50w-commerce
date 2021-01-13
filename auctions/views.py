@@ -184,3 +184,51 @@ def create_bid(request):
             )
     else:
         return HttpResponse("Method not allowed", status=405)
+
+
+@login_required
+def add_watcher(request):
+
+    if request.method == "POST":
+
+        try:
+            listing = Listing.objects.get(pk=request.POST["listing_id"])
+
+            if not listing.watchers.filter(pk=request.user.id).exists():
+                listing.watchers.add(request.user)
+                listing.save()
+
+        except (Listing.DoesNotExist, KeyError, ValueError):
+            # TODO: create 'something went wrong' page before redirect
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return HttpResponseRedirect(
+                reverse("read_listing", args=[listing.id]),
+            )
+
+    else:
+        return HttpResponse("Method not allowed", status=405)
+
+
+@login_required
+def remove_watcher(request):
+
+    if request.method == "POST":
+
+        try:
+            listing = Listing.objects.get(pk=request.POST["listing_id"])
+
+            if listing.watchers.filter(pk=request.user.id).exists():
+                listing.watchers.remove(request.user)
+                listing.save()
+
+        except (Listing.DoesNotExist, KeyError, ValueError):
+            # TODO: create 'something went wrong' page before redirect
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return HttpResponseRedirect(
+                reverse("read_listing", args=[listing.id]),
+            )
+
+    else:
+        return HttpResponse("Method not allowed", status=405)
