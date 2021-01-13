@@ -29,6 +29,7 @@ class Listing(models.Model):
         upload_to=rename_image_files,
         blank=True
     )
+    watchers = models.ManyToManyField(User)
 
     @property
     def highest_bid(self):
