@@ -125,7 +125,8 @@ def read_listing(request, pk):
         listing = None
 
     return render(request, "auctions/listing.html", {
-        "listing": listing
+        "listing": listing,
+        "on_watchlist": listing.watchers.filter(pk=request.user.id).exists(),
     })
 
 
