@@ -82,7 +82,8 @@ class NewListingForm(forms.ModelForm):
         model = Listing
         fields = ("title", "description", "starting_bid", "photo")
         widgets = {
-            "description": forms.Textarea(attrs={"cols": 80, "rows": 20})
+            "description": forms.Textarea(attrs={"cols": 80, "rows": 20}),
+            "starting_bid": forms.NumberInput(attrs={"min": 1, "step": 1}),
         }
 
 
@@ -98,7 +99,15 @@ def create_listing(request):
 
         form = NewListingForm(request.POST, request.FILES)
 
-        if form.is_valid():
+        valid = form.is_valid()
+        positive = form.cleaned_data["starting_bid"] > 0
+        if not positive:
+            form.add_error(
+                "starting_bid",
+                "Must be a number above zero"
+            )
+
+        if valid and positive:
             listing = form.save(commit=False)
             listing.owner = request.user
             listing.save()

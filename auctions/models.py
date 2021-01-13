@@ -15,7 +15,7 @@ def rename_image_files(instance, filename):
 class Listing(models.Model):
     title = models.CharField(max_length=64, verbose_name="Title")
     description = models.CharField(max_length=1000, verbose_name="Description")
-    starting_bid = models.IntegerField(verbose_name="Starting Bid", default=0)
+    starting_bid = models.IntegerField(verbose_name="Starting Bid")
     is_open = models.BooleanField(default=True)
     owner = models.ForeignKey(
         User,
