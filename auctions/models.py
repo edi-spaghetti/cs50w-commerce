@@ -11,6 +11,10 @@ class User(AbstractUser):
 class Category(models.Model):
     name = models.CharField(max_length=64, verbose_name="Name")
 
+    @property
+    def active_listings(self):
+        return Listing.objects.filter(category=self, is_open=True)
+
     def __str__(self):
         return self.name
 

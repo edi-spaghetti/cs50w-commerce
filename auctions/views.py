@@ -283,5 +283,13 @@ def read_categories(request):
     })
 
 
-# TODO: Clicking on the name of any category should take the user to a page
-#       that displays all of the active listings in that category
+def read_category(request, pk):
+
+    try:
+        category = Category.objects.get(pk=pk)
+    except Category.DoesNotExist:
+        category = None
+
+    return render(request, "auctions/category.html", {
+        "category": category
+    })
