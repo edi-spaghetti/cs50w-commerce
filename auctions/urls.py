@@ -14,6 +14,7 @@ urlpatterns = [
     path("add_watcher", views.add_watcher, name="add_watcher"),
     path("remove_watcher", views.remove_watcher, name="remove_watcher"),
     path("watchlist", views.read_watchlist, name="read_watchlist"),
+    path("categories", views.read_categories, name="read_categories"),
     # TODO: Via the Django admin interface, a site administrator should be
     #       able to view, add, edit, and delete any listings, comments, and
     #       bids made on the site

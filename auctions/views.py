@@ -10,6 +10,7 @@ from .models import (
     User,
     Listing,
     Bid,
+    Category,
 )
 
 
@@ -273,8 +274,14 @@ def read_watchlist(request):
     })
 
 
-# TODO: Users should be able to visit a page that displays a list of all
-#       listing categories.
+def read_categories(request):
+
+    categories = Category.objects.all()
+
+    return render(request, "auctions/categories.html", {
+        "categories": categories
+    })
+
 
 # TODO: Clicking on the name of any category should take the user to a page
 #       that displays all of the active listings in that category
