@@ -263,13 +263,14 @@ def remove_watcher(request):
         return HttpResponse("Method not allowed", status=405)
 
 
-# TODO: Users who are signed in should be able to visit a Watchlist page
+@login_required
+def read_watchlist(request):
 
-# TODO: Watchlist should display all of the listings that a user has added
-#       to their watchlist
+    listings = Listing.objects.filter(watchers=request.user)
 
-# TODO: Clicking on any of those listings should take the user to that
-#       listing’s page
+    return render(request, "auctions/watchlist.html", {
+        "listings": listings
+    })
 
 
 # TODO: Users should be able to visit a page that displays a list of all
