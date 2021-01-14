@@ -133,6 +133,15 @@ def read_listing(request, pk):
     except Listing.DoesNotExist:
         listing = None
 
+    # TODO: If a user is signed in on a closed listing page,
+    #       and the user has won that auction, the page should say so.
+
+    # TODO: Users who are signed in should be able to add comments to the
+    #       listing page.
+
+    #  TODO: The listing page should display all comments that have
+    #        been made on the listing.
+
     return render(request, "auctions/listing.html", {
         "listing": listing,
         "on_watchlist": listing.watchers.filter(pk=request.user.id).exists(),
@@ -252,3 +261,19 @@ def remove_watcher(request):
 
     else:
         return HttpResponse("Method not allowed", status=405)
+
+
+# TODO: Users who are signed in should be able to visit a Watchlist page
+
+# TODO: Watchlist should display all of the listings that a user has added
+#       to their watchlist
+
+# TODO: Clicking on any of those listings should take the user to that
+#       listing’s page
+
+
+# TODO: Users should be able to visit a page that displays a list of all
+#       listing categories.
+
+# TODO: Clicking on the name of any category should take the user to a page
+#       that displays all of the active listings in that category

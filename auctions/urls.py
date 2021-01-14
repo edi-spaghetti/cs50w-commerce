@@ -13,4 +13,7 @@ urlpatterns = [
     path("create_bid", views.create_bid, name="create_bid"),
     path("add_watcher", views.add_watcher, name="add_watcher"),
     path("remove_watcher", views.remove_watcher, name="remove_watcher"),
+    # TODO: Via the Django admin interface, a site administrator should be
+    #       able to view, add, edit, and delete any listings, comments, and
+    #       bids made on the site
 ]
