@@ -24,6 +24,7 @@ def index(request):
 
 # ============================== Authentication ===============================
 
+
 def login_view(request):
     if request.method == "POST":
 
@@ -53,6 +54,7 @@ def register(request):
     if request.method == "POST":
         username = request.POST["username"]
         email = request.POST["email"]
+        # TODO: ensure first and last name added on registration
 
         # Ensure password matches confirmation
         password = request.POST["password"]
@@ -76,7 +78,7 @@ def register(request):
         return render(request, "auctions/register.html")
 
 
-# ================================= Listings ==================================
+# ================================== Forms ====================================
 
 
 class NewListingForm(forms.ModelForm):
@@ -99,6 +101,9 @@ class NewCommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ("content", "listing", "author")
+
+
+# ================================== Listings =================================
 
 
 @login_required
@@ -172,6 +177,9 @@ def close_listing(request):
         return HttpResponse("Method not allowed", status=405)
 
 
+# ================================= Bids ======================================
+
+
 @login_required
 def create_bid(request):
 
@@ -212,6 +220,9 @@ def create_bid(request):
             )
     else:
         return HttpResponse("Method not allowed", status=405)
+
+
+# ================================ Watchlist ==================================
 
 
 @login_required
@@ -272,6 +283,9 @@ def read_watchlist(request):
     })
 
 
+# ================================= Categories ================================
+
+
 def read_categories(request):
 
     categories = Category.objects.all()
@@ -291,6 +305,9 @@ def read_category(request, pk):
     return render(request, "auctions/category.html", {
         "category": category
     })
+
+
+# ================================= Comments ==================================
 
 
 @login_required
@@ -320,3 +337,6 @@ def create_comment(request):
 
     else:
         return HttpResponse("Method not allowed", status=405)
+
+
+# TODO: post_only_pathway wrapper function + decorators
