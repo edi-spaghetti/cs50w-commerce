@@ -134,9 +134,6 @@ def read_listing(request, pk):
     except Listing.DoesNotExist:
         listing = None
 
-    # TODO: If a user is signed in on a closed listing page,
-    #       and the user has won that auction, the page should say so.
-
     # TODO: Users who are signed in should be able to add comments to the
     #       listing page.
 

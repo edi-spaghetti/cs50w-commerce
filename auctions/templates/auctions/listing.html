@@ -3,8 +3,9 @@
 {% block body %}
     {% if listing %}
         <h2>{{ listing.title }}</h2>
-        {% if user.is_authenticated and user != listing.owner %}
-            <p>
+        {% if user.is_authenticated %}
+            <!-- Add/Remove from Watchlist -->
+            {% if user != listing.owner %}
                 {% if on_watchlist %}
                     <form action="{% url 'remove_watcher' %}" method="post">
                         {% csrf_token %}
@@ -18,7 +19,17 @@
                         <button class="btn btn-link" type="submit">Add To Watchlist</button>
                     </form>
                 {% endif %}
-            </p>
+            {% endif %}
+            <!-- Auction Winner -->
+            {% if listing.is_open %}
+                {% if user == listing.highest_bidder %}
+                    <p>Good luck {{ user.first_name }}, you're in the lead to win the auction!</p>
+                {% endif %}
+            {% else %}
+                {% if user == listing.highest_bidder %}
+                    <p>Congratulations {{ user.first_name }}, you won the auction!</p>
+                {% endif %}
+            {% endif %}
         {% endif %}
         <p>
             {{ listing.description }}

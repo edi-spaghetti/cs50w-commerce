@@ -62,6 +62,27 @@ class Listing(models.Model):
         return highest_bid or self.starting_bid
 
     @property
+    def highest_bidder(self):
+        """
+        Find and return the user object that is linked to the bid with the
+        highest value on the current listing. If no bid has been submitted,
+        or the user cannot be found, None will be returned.
+        :return: User that submitted the highest bid
+        :rtype: :class:`User` or None
+        """
+        try:
+            bids = self.bids.values()
+            highest_bid = sorted(bids, key=lambda x: x['value'])[-1]
+            highest_bidder = User.objects.get(pk=highest_bid['bidder_id'])
+            print(f"Found highest bidder: {highest_bidder}")
+            return highest_bidder
+        except IndexError:
+            return
+        except User.DoesNotExist:
+            return
+
+
+    @property
     def bid_increment(self):
         # setting to 1 for now, but potentially this could be configurable
         # by users for their listings.
