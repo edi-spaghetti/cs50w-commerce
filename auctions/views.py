@@ -137,9 +137,6 @@ def read_listing(request, pk):
     # TODO: Users who are signed in should be able to add comments to the
     #       listing page.
 
-    #  TODO: The listing page should display all comments that have
-    #        been made on the listing.
-
     return render(request, "auctions/listing.html", {
         "listing": listing,
         "on_watchlist": listing.watchers.filter(pk=request.user.id).exists(),

@@ -81,7 +81,6 @@ class Listing(models.Model):
         except User.DoesNotExist:
             return
 
-
     @property
     def bid_increment(self):
         # setting to 1 for now, but potentially this could be configurable
@@ -94,6 +93,10 @@ class Listing(models.Model):
         Lowest value a new bid can be created at on the current listing
         """
         return self.highest_bid + self.bid_increment
+
+    @property
+    def reverse_chronological_comments(self):
+        return self.comments.order_by('-created_at')
 
 
 class Bid(models.Model):
