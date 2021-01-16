@@ -74,6 +74,7 @@ class Listing(models.Model):
             bids = self.bids.values()
             highest_bid = sorted(bids, key=lambda x: x['value'])[-1]
             highest_bidder = User.objects.get(pk=highest_bid['bidder_id'])
+            # TODO: remove debug logging
             print(f"Found highest bidder: {highest_bidder}")
             return highest_bidder
         except IndexError:

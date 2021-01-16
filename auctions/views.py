@@ -11,6 +11,7 @@ from .models import (
     Listing,
     Bid,
     Category,
+    Comment,
 )
 
 
@@ -94,6 +95,12 @@ class NewBidForm(forms.ModelForm):
         fields = ("value", "listing", "bidder")
 
 
+class NewCommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ("content", "listing", "author")
+
+
 @login_required
 def create_listing(request):
     if request.method == "POST":
@@ -133,9 +140,6 @@ def read_listing(request, pk):
         listing = Listing.objects.get(pk=pk)
     except Listing.DoesNotExist:
         listing = None
-
-    # TODO: Users who are signed in should be able to add comments to the
-    #       listing page.
 
     return render(request, "auctions/listing.html", {
         "listing": listing,
@@ -287,3 +291,32 @@ def read_category(request, pk):
     return render(request, "auctions/category.html", {
         "category": category
     })
+
+
+@login_required
+def create_comment(request):
+
+    if request.method == "POST":
+
+        try:
+            listing = Listing.objects.get(pk=request.POST["listing_id"])
+            content = request.POST["content"]
+
+            comment = NewCommentForm({
+                "listing": listing,
+                "author": request.user,
+                "content": content
+            })
+            if comment.is_valid():
+                comment.save()
+
+        except (Listing.DoesNotExist, KeyError, ValueError):
+            # TODO: create 'something went wrong' page before redirect
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return HttpResponseRedirect(
+                reverse("read_listing", args=[listing.id]),
+            )
+
+    else:
+        return HttpResponse("Method not allowed", status=405)
