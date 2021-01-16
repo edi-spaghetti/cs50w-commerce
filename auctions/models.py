@@ -110,3 +110,20 @@ class Bid(models.Model):
         verbose_name="Bidder"
     )
     value = models.IntegerField(verbose_name="Bid")
+
+
+class Comment(models.Model):
+    listing = models.ForeignKey(
+        Listing,
+        related_name="comments",
+        on_delete=models.CASCADE,
+        verbose_name="Listing"
+    )
+    author = models.ForeignKey(
+        User,
+        related_name="comments",
+        on_delete=models.CASCADE,
+        verbose_name="Author"
+    )
+    content = models.CharField(max_length=500, verbose_name="Content")
+    created_at = models.DateTimeField(auto_now_add=True)
