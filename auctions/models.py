@@ -9,14 +9,19 @@ class User(AbstractUser):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=64, verbose_name="Name")
+
+    def __str__(self):
+        return self.name
+
+    name = models.CharField(
+        max_length=64,
+        verbose_name="Name",
+        unique=True,
+    )
 
     @property
     def active_listings(self):
         return Listing.objects.filter(category=self, is_open=True)
-
-    def __str__(self):
-        return self.name
 
 
 def rename_image_files(instance, filename):
@@ -24,6 +29,16 @@ def rename_image_files(instance, filename):
 
 
 class Listing(models.Model):
+
+    def __str__(self):
+
+        status = "Open" if self.is_open else "Closed"
+        title_summary = self.title[:10]
+        if len(self.title):
+            title_summary += "..."
+
+        return f"<{self.owner.username}'s {status} Listing: {title_summary}>"
+
     title = models.CharField(max_length=64, verbose_name="Title")
     description = models.CharField(max_length=1000, verbose_name="Description")
     starting_bid = models.IntegerField(verbose_name="Starting Bid")
@@ -101,6 +116,12 @@ class Listing(models.Model):
 
 
 class Bid(models.Model):
+
+    def __str__(self):
+        return (
+            f"<{self.bidder.username}'s bid of {self.value} "
+            f"on {self.listing}>")
+
     listing = models.ForeignKey(
         Listing,
         related_name="bids",
@@ -117,6 +138,10 @@ class Bid(models.Model):
 
 
 class Comment(models.Model):
+
+    def __str__(self):
+        return f"<{self.author.username}'s Comment: {self.content}>"
+
     listing = models.ForeignKey(
         Listing,
         related_name="comments",
