@@ -17,8 +17,8 @@ from .models import (
 
 def index(request):
 
-    return render(request, "auctions/index.html", {
-        "listings": Listing.objects.filter(is_open=True)
+    return render(request, 'auctions/index.html', {
+        'listings': Listing.objects.filter(is_open=True)
     })
 
 
@@ -26,42 +26,42 @@ def index(request):
 
 
 def login_view(request):
-    if request.method == "POST":
+    if request.method == 'POST':
 
         # Attempt to sign user in
-        username = request.POST["username"]
-        password = request.POST["password"]
+        username = request.POST['username']
+        password = request.POST['password']
         user = authenticate(request, username=username, password=password)
 
         # Check if authentication successful
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect(reverse("index"))
+            return HttpResponseRedirect(reverse('index'))
         else:
-            return render(request, "auctions/login.html", {
-                "message": "Invalid username and/or password."
+            return render(request, 'auctions/login.html', {
+                'message': 'Invalid username and/or password.'
             })
     else:
-        return render(request, "auctions/login.html")
+        return render(request, 'auctions/login.html')
 
 
 def logout_view(request):
     logout(request)
-    return HttpResponseRedirect(reverse("index"))
+    return HttpResponseRedirect(reverse('index'))
 
 
 def register(request):
-    if request.method == "POST":
-        username = request.POST["username"]
-        email = request.POST["email"]
-        first_name = request.POST["first_name"]
+    if request.method == 'POST':
+        username = request.POST['username']
+        email = request.POST['email']
+        first_name = request.POST['first_name']
 
         # Ensure password matches confirmation
-        password = request.POST["password"]
-        confirmation = request.POST["confirmation"]
+        password = request.POST['password']
+        confirmation = request.POST['confirmation']
         if password != confirmation:
-            return render(request, "auctions/register.html", {
-                "message": "Passwords must match."
+            return render(request, 'auctions/register.html', {
+                'message': 'Passwords must match.'
             })
 
         # Attempt to create new user
@@ -72,13 +72,13 @@ def register(request):
             )
             user.save()
         except IntegrityError:
-            return render(request, "auctions/register.html", {
-                "message": "Username already taken."
+            return render(request, 'auctions/register.html', {
+                'message': 'Username already taken.'
             })
         login(request, user)
-        return HttpResponseRedirect(reverse("index"))
+        return HttpResponseRedirect(reverse('index'))
     else:
-        return render(request, "auctions/register.html")
+        return render(request, 'auctions/register.html')
 
 
 # ================================== Forms ====================================
@@ -87,23 +87,23 @@ def register(request):
 class NewListingForm(forms.ModelForm):
     class Meta:
         model = Listing
-        fields = ("title", "description", "starting_bid", "photo", "category")
+        fields = ('title', 'description', 'starting_bid', 'photo', 'category')
         widgets = {
-            "description": forms.Textarea(attrs={"cols": 80, "rows": 20}),
-            "starting_bid": forms.NumberInput(attrs={"min": 1, "step": 1}),
+            'description': forms.Textarea(attrs={'cols': 80, 'rows': 20}),
+            'starting_bid': forms.NumberInput(attrs={'min': 1, 'step': 1}),
         }
 
 
 class NewBidForm(forms.ModelForm):
     class Meta:
         model = Bid
-        fields = ("value", "listing", "bidder")
+        fields = ('value', 'listing', 'bidder')
 
 
 class NewCommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ("content", "listing", "author")
+        fields = ('content', 'listing', 'author')
 
 
 # ================================== Listings =================================
@@ -111,16 +111,16 @@ class NewCommentForm(forms.ModelForm):
 
 @login_required
 def create_listing(request):
-    if request.method == "POST":
+    if request.method == 'POST':
 
         form = NewListingForm(request.POST, request.FILES)
 
         valid = form.is_valid()
-        positive = form.cleaned_data["starting_bid"] > 0
+        positive = form.cleaned_data['starting_bid'] > 0
         if not positive:
             form.add_error(
-                "starting_bid",
-                "Must be a number above zero"
+                'starting_bid',
+                'Must be a number above zero'
             )
 
         if valid and positive:
@@ -129,16 +129,16 @@ def create_listing(request):
             listing.save()
             return HttpResponseRedirect(
                 reverse(
-                    "read_listing", args=[listing.id]
+                    'read_listing', args=[listing.id]
                 )
             )
         else:
-            return render(request, "auctions/create_listing.html", {
-                "form": form,
+            return render(request, 'auctions/create_listing.html', {
+                'form': form,
             })
 
-    return render(request, "auctions/create_listing.html", {
-        "form": NewListingForm()
+    return render(request, 'auctions/create_listing.html', {
+        'form': NewListingForm()
     })
 
 
@@ -149,35 +149,35 @@ def read_listing(request, pk):
     except Listing.DoesNotExist:
         listing = None
 
-    return render(request, "auctions/listing.html", {
-        "listing": listing,
-        "on_watchlist": listing.watchers.filter(pk=request.user.id).exists(),
-        "insufficient_bid": False,
+    return render(request, 'auctions/listing.html', {
+        'listing': listing,
+        'on_watchlist': listing.watchers.filter(pk=request.user.id).exists(),
+        'insufficient_bid': False,
     })
 
 
 @login_required
 def close_listing(request):
 
-    if request.method == "POST":
+    if request.method == 'POST':
 
         # TODO: error checking e.g. no listing id submitted /  not found
         try:
-            listing = Listing.objects.get(pk=request.POST["listing_id"])
+            listing = Listing.objects.get(pk=request.POST['listing_id'])
         except (Listing.DoesNotExist, KeyError, ValueError):
             # TODO: create 'something went wrong' page before redirect
-            return HttpResponseRedirect(reverse("index"))
+            return HttpResponseRedirect(reverse('index'))
         else:
             if request.user == listing.owner:
                 listing.is_open = False
                 listing.save()
 
             return HttpResponseRedirect(
-                reverse("read_listing", args=[listing.id])
+                reverse('read_listing', args=[listing.id])
             )
 
     else:
-        return HttpResponse("Method not allowed", status=405)
+        return HttpResponse('Method not allowed', status=405)
 
 
 # ================================= Bids ======================================
@@ -186,43 +186,43 @@ def close_listing(request):
 @login_required
 def create_bid(request):
 
-    if request.method == "POST":
+    if request.method == 'POST':
 
         try:
-            listing = Listing.objects.get(pk=request.POST["listing_id"])
+            listing = Listing.objects.get(pk=request.POST['listing_id'])
 
             bid = NewBidForm(
                 {
-                    "listing": listing,
-                    "bidder": request.user,
-                    "value": int(request.POST["value"])
+                    'listing': listing,
+                    'bidder': request.user,
+                    'value': int(request.POST['value'])
                 }
             )
 
             if request.user != listing.owner:
                 if bid.is_valid():
-                    new_value = int(bid.cleaned_data["value"])
+                    new_value = int(bid.cleaned_data['value'])
                     if new_value >= listing.new_bid_minimum:
                         bid.save()
                     else:
                         # re-implementing read_listing template render
                         # so I can pass an error message without having to
-                        return render(request, "auctions/listing.html", {
-                            "listing": listing,
-                            "on_watchlist": listing.watchers.filter(
+                        return render(request, 'auctions/listing.html', {
+                            'listing': listing,
+                            'on_watchlist': listing.watchers.filter(
                                 pk=request.user.id).exists(),
-                            "insufficient_bid": True
+                            'insufficient_bid': True
                         })
 
         except (Listing.DoesNotExist, KeyError, ValueError):
             # TODO: create 'something went wrong' page before redirect
-            return HttpResponseRedirect(reverse("index"))
+            return HttpResponseRedirect(reverse('index'))
         else:
             return HttpResponseRedirect(
-                reverse("read_listing", args=[listing.id]),
+                reverse('read_listing', args=[listing.id]),
             )
     else:
-        return HttpResponse("Method not allowed", status=405)
+        return HttpResponse('Method not allowed', status=405)
 
 
 # ================================ Watchlist ==================================
@@ -231,10 +231,10 @@ def create_bid(request):
 @login_required
 def add_watcher(request):
 
-    if request.method == "POST":
+    if request.method == 'POST':
 
         try:
-            listing = Listing.objects.get(pk=request.POST["listing_id"])
+            listing = Listing.objects.get(pk=request.POST['listing_id'])
 
             if not listing.watchers.filter(pk=request.user.id).exists():
                 listing.watchers.add(request.user)
@@ -242,23 +242,23 @@ def add_watcher(request):
 
         except (Listing.DoesNotExist, KeyError, ValueError):
             # TODO: create 'something went wrong' page before redirect
-            return HttpResponseRedirect(reverse("index"))
+            return HttpResponseRedirect(reverse('index'))
         else:
             return HttpResponseRedirect(
-                reverse("read_listing", args=[listing.id]),
+                reverse('read_listing', args=[listing.id]),
             )
 
     else:
-        return HttpResponse("Method not allowed", status=405)
+        return HttpResponse('Method not allowed', status=405)
 
 
 @login_required
 def remove_watcher(request):
 
-    if request.method == "POST":
+    if request.method == 'POST':
 
         try:
-            listing = Listing.objects.get(pk=request.POST["listing_id"])
+            listing = Listing.objects.get(pk=request.POST['listing_id'])
 
             if listing.watchers.filter(pk=request.user.id).exists():
                 listing.watchers.remove(request.user)
@@ -266,14 +266,14 @@ def remove_watcher(request):
 
         except (Listing.DoesNotExist, KeyError, ValueError):
             # TODO: create 'something went wrong' page before redirect
-            return HttpResponseRedirect(reverse("index"))
+            return HttpResponseRedirect(reverse('index'))
         else:
             return HttpResponseRedirect(
-                reverse("read_listing", args=[listing.id]),
+                reverse('read_listing', args=[listing.id]),
             )
 
     else:
-        return HttpResponse("Method not allowed", status=405)
+        return HttpResponse('Method not allowed', status=405)
 
 
 @login_required
@@ -281,8 +281,8 @@ def read_watchlist(request):
 
     listings = Listing.objects.filter(watchers=request.user)
 
-    return render(request, "auctions/watchlist.html", {
-        "listings": listings
+    return render(request, 'auctions/watchlist.html', {
+        'listings': listings
     })
 
 
@@ -293,8 +293,8 @@ def read_categories(request):
 
     categories = Category.objects.all()
 
-    return render(request, "auctions/categories.html", {
-        "categories": categories
+    return render(request, 'auctions/categories.html', {
+        'categories': categories
     })
 
 
@@ -305,8 +305,8 @@ def read_category(request, pk):
     except Category.DoesNotExist:
         category = None
 
-    return render(request, "auctions/category.html", {
-        "category": category
+    return render(request, 'auctions/category.html', {
+        'category': category
     })
 
 
@@ -316,30 +316,30 @@ def read_category(request, pk):
 @login_required
 def create_comment(request):
 
-    if request.method == "POST":
+    if request.method == 'POST':
 
         try:
-            listing = Listing.objects.get(pk=request.POST["listing_id"])
-            content = request.POST["content"]
+            listing = Listing.objects.get(pk=request.POST['listing_id'])
+            content = request.POST['content']
 
             comment = NewCommentForm({
-                "listing": listing,
-                "author": request.user,
-                "content": content
+                'listing': listing,
+                'author': request.user,
+                'content': content
             })
             if comment.is_valid():
                 comment.save()
 
         except (Listing.DoesNotExist, KeyError, ValueError):
             # TODO: create 'something went wrong' page before redirect
-            return HttpResponseRedirect(reverse("index"))
+            return HttpResponseRedirect(reverse('index'))
         else:
             return HttpResponseRedirect(
-                reverse("read_listing", args=[listing.id]),
+                reverse('read_listing', args=[listing.id]),
             )
 
     else:
-        return HttpResponse("Method not allowed", status=405)
+        return HttpResponse('Method not allowed', status=405)
 
 
 # TODO: post_only_pathway wrapper function + decorators

@@ -15,7 +15,7 @@ class Category(models.Model):
 
     name = models.CharField(
         max_length=64,
-        verbose_name="Name",
+        verbose_name='Name',
         unique=True,
     )
 
@@ -25,29 +25,29 @@ class Category(models.Model):
 
 
 def rename_image_files(instance, filename):
-    return f"listing/{uuid4().hex}"
+    return f'listing/{uuid4().hex}'
 
 
 class Listing(models.Model):
 
     def __str__(self):
 
-        status = "Open" if self.is_open else "Closed"
+        status = 'Open' if self.is_open else 'Closed'
         title_summary = self.title[:10]
         if len(self.title):
-            title_summary += "..."
+            title_summary += '...'
 
         return f"<{self.owner.username}'s {status} Listing: {title_summary}>"
 
-    title = models.CharField(max_length=64, verbose_name="Title")
-    description = models.CharField(max_length=1000, verbose_name="Description")
-    starting_bid = models.IntegerField(verbose_name="Starting Bid")
+    title = models.CharField(max_length=64, verbose_name='Title')
+    description = models.CharField(max_length=1000, verbose_name='Description')
+    starting_bid = models.IntegerField(verbose_name='Starting Bid')
     is_open = models.BooleanField(default=True)
     owner = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        verbose_name="Owner",
-        related_name="listings",
+        verbose_name='Owner',
+        related_name='listings',
         null=True,
         blank=True,
     )
@@ -59,8 +59,8 @@ class Listing(models.Model):
     category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,
-        verbose_name="Category",
-        related_name="listings",
+        verbose_name='Category',
+        related_name='listings',
         null=True,
         blank=True,
     )
@@ -73,7 +73,7 @@ class Listing(models.Model):
         :rtype: int
         """
         bids = self.bids.values()
-        highest_bid = bids.aggregate(Max("value"))["value__max"]
+        highest_bid = bids.aggregate(Max('value'))['value__max']
         return highest_bid or self.starting_bid
 
     @property
@@ -90,7 +90,7 @@ class Listing(models.Model):
             highest_bid = sorted(bids, key=lambda x: x['value'])[-1]
             highest_bidder = User.objects.get(pk=highest_bid['bidder_id'])
             # TODO: remove debug logging
-            print(f"Found highest bidder: {highest_bidder}")
+            print(f'Found highest bidder: {highest_bidder}')
             return highest_bidder
         except IndexError:
             return
@@ -124,17 +124,17 @@ class Bid(models.Model):
 
     listing = models.ForeignKey(
         Listing,
-        related_name="bids",
+        related_name='bids',
         on_delete=models.CASCADE,
-        verbose_name="Listing"
+        verbose_name='Listing'
     )
     bidder = models.ForeignKey(
         User,
-        related_name="bids",
+        related_name='bids',
         on_delete=models.CASCADE,
-        verbose_name="Bidder"
+        verbose_name='Bidder'
     )
-    value = models.IntegerField(verbose_name="Bid")
+    value = models.IntegerField(verbose_name='Bid')
 
 
 class Comment(models.Model):
@@ -144,15 +144,15 @@ class Comment(models.Model):
 
     listing = models.ForeignKey(
         Listing,
-        related_name="comments",
+        related_name='comments',
         on_delete=models.CASCADE,
-        verbose_name="Listing"
+        verbose_name='Listing'
     )
     author = models.ForeignKey(
         User,
-        related_name="comments",
+        related_name='comments',
         on_delete=models.CASCADE,
-        verbose_name="Author"
+        verbose_name='Author'
     )
-    content = models.CharField(max_length=500, verbose_name="Content")
+    content = models.CharField(max_length=500, verbose_name='Content')
     created_at = models.DateTimeField(auto_now_add=True)
