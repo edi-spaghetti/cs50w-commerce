@@ -1,5 +1,5 @@
 # edi-spaghetti
 
 TODO:
- - Logging
  - Documentation
+ - Styling

@@ -1,7 +1,12 @@
+import logging
+from uuid import uuid4
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import Max
-from uuid import uuid4
+
+
+logger = logging.getLogger(__name__)
 
 
 class User(AbstractUser):
@@ -25,7 +30,11 @@ class Category(models.Model):
 
 
 def rename_image_files(instance, filename):
-    return f'listing/{uuid4().hex}'
+
+    new_file_name = f'listing/{uuid4().hex}'
+    logger.info(f'Renaming filename: {filename} > : {new_file_name}')
+
+    return new_file_name
 
 
 class Listing(models.Model):
@@ -89,8 +98,6 @@ class Listing(models.Model):
             bids = self.bids.values()
             highest_bid = sorted(bids, key=lambda x: x['value'])[-1]
             highest_bidder = User.objects.get(pk=highest_bid['bidder_id'])
-            # TODO: remove debug logging
-            print(f'Found highest bidder: {highest_bidder}')
             return highest_bidder
         except IndexError:
             return

@@ -1,5 +1,3 @@
-import logging
-
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
@@ -15,15 +13,16 @@ from .models import (
     Category,
     Comment,
 )
+from .utils import RequestLogger
 
 
-logger = logging.getLogger(__name__)
+logger = RequestLogger(__name__)
 
 
 def index(request):
 
     listings = Listing.objects.filter(is_open=True)
-    logger.debug(f'Loading {len(listings)} listings on index')
+    logger.debug(request.user.id, f' viewed {len(listings)} listings on index')
 
     return render(request, 'auctions/index.html', {
         'listings': listings
@@ -44,16 +43,24 @@ def login_view(request):
         # Check if authentication successful
         if user is not None:
             login(request, user)
+            logger.debug(user.id, f'successful login')
             return HttpResponseRedirect(reverse('index'))
         else:
+            try:
+                user = User.objects.get(username=username)
+                logger.debug(user.id, 'login fail > incorrect password')
+            except User.DoesNotExist:
+                logger.debug(username, 'login fail > incorrect username')
             return render(request, 'auctions/login.html', {
                 'message': 'Invalid username and/or password.'
             })
     else:
+        logger.debug(request.user.id, 'loaded login view')
         return render(request, 'auctions/login.html')
 
 
 def logout_view(request):
+    logger.debug(request.user.id, 'log out')
     logout(request)
     return HttpResponseRedirect(reverse('index'))
 
@@ -68,6 +75,10 @@ def register(request):
         password = request.POST['password']
         confirmation = request.POST['confirmation']
         if password != confirmation:
+            logger.debug(
+                request.user.id,
+                'Attempted register password no match'
+            )
             return render(request, 'auctions/register.html', {
                 'message': 'Passwords must match.'
             })
@@ -79,13 +90,20 @@ def register(request):
                 first_name=first_name
             )
             user.save()
+            logger.info(user.id, 'New successful registration')
         except IntegrityError:
+            logger.debug(
+                request.user.id,
+                f'failed register existing username: {username}'
+            )
             return render(request, 'auctions/register.html', {
                 'message': 'Username already taken.'
             })
+        logger.debug(user.id, 'successful login')
         login(request, user)
         return HttpResponseRedirect(reverse('index'))
     else:
+        logger.debug(request.user.id, 'loaded register view')
         return render(request, 'auctions/register.html')
 
 
@@ -130,21 +148,25 @@ def create_listing(request):
                 'starting_bid',
                 'Must be a number above zero'
             )
+            logger.debug(request.user.id, 'Below zero starting bid')
 
         if valid and positive:
             listing = form.save(commit=False)
             listing.owner = request.user
-            listing.save()
+            listing = listing.save()
+            logger.info(request.user.id, f'New Listing: {listing}')
             return HttpResponseRedirect(
                 reverse(
                     'read_listing', args=[listing.id]
                 )
             )
         else:
+            logger.debug(request.user.id, 'Invalid create listing attempt')
             return render(request, 'auctions/create_listing.html', {
                 'form': form,
             })
 
+    logger.debug(request.user.id, 'Loaded create listing view')
     return render(request, 'auctions/create_listing.html', {
         'form': NewListingForm()
     })
@@ -156,6 +178,8 @@ def read_listing(request, pk):
         listing = Listing.objects.get(pk=pk)
     except Listing.DoesNotExist:
         listing = None
+
+    logger.debug(request.user.id, f'Loaded listing: {listing}')
 
     return render(request, 'auctions/listing.html', {
         'listing': listing,
@@ -174,17 +198,35 @@ def close_listing(request):
             listing = Listing.objects.get(pk=request.POST['listing_id'])
         except (Listing.DoesNotExist, KeyError, ValueError):
             # TODO: create 'something went wrong' page before redirect
+            logger.warning(
+                request.user.id,
+                f'failed to get listing {request.POST.get("listing_id")}'
+            )
             return HttpResponseRedirect(reverse('index'))
         else:
             if request.user == listing.owner:
                 listing.is_open = False
                 listing.save()
+                logger.info(
+                    request.user.id,
+                    f'Closed Listing: {listing.id}'
+                )
+            else:
+                logger.warning(
+                    request.user.id,
+                    f'Attempted close listing owned by '
+                    f'User: {listing.owner.id}'
+                )
 
             return HttpResponseRedirect(
                 reverse('read_listing', args=[listing.id])
             )
 
     else:
+        logger.warning(
+            request.user.id,
+            f'Invalid GET request on close listing'
+        )
         return HttpResponse('Method not allowed', status=405)
 
 
@@ -211,10 +253,20 @@ def create_bid(request):
                 if bid.is_valid():
                     new_value = int(bid.cleaned_data['value'])
                     if new_value >= listing.new_bid_minimum:
-                        bid.save()
+                        bid = bid.save()
+                        logger.info(
+                            request.user.id,
+                            f'New Bid: <{bid.id}> {bid.value} '
+                            f'on Listing: {listing.id}'
+                        )
                     else:
                         # re-implementing read_listing template render
                         # so I can pass an error message without having to
+                        logger.warning(
+                            request.user.id,
+                            f'Attempted bid below minimum'
+                        )
+
                         return render(request, 'auctions/listing.html', {
                             'listing': listing,
                             'on_watchlist': listing.watchers.filter(
@@ -224,12 +276,20 @@ def create_bid(request):
 
         except (Listing.DoesNotExist, KeyError, ValueError):
             # TODO: create 'something went wrong' page before redirect
+            logger.warning(
+                request.user.id,
+                f'failed to get listing {request.POST.get("listing_id")}'
+            )
             return HttpResponseRedirect(reverse('index'))
         else:
             return HttpResponseRedirect(
                 reverse('read_listing', args=[listing.id]),
             )
     else:
+        logger.warning(
+            request.user.id,
+            f'Invalid GET request on create bid'
+        )
         return HttpResponse('Method not allowed', status=405)
 
 
@@ -247,9 +307,23 @@ def add_watcher(request):
             if not listing.watchers.filter(pk=request.user.id).exists():
                 listing.watchers.add(request.user)
                 listing.save()
+                logger.info(
+                    request.user.id,
+                    f'added as watcher to Listing: {listing.id}'
+                )
+            else:
+                logger.warning(
+                    request.user.id,
+                    f'attempted to add as watcher to '
+                    f'Listing: {listing.id} when already is watcher'
+                )
 
         except (Listing.DoesNotExist, KeyError, ValueError):
             # TODO: create 'something went wrong' page before redirect
+            logger.warning(
+                request.user.id,
+                f'failed to get listing {request.POST.get("listing_id")}'
+            )
             return HttpResponseRedirect(reverse('index'))
         else:
             return HttpResponseRedirect(
@@ -257,6 +331,10 @@ def add_watcher(request):
             )
 
     else:
+        logger.warning(
+            request.user.id,
+            f'Invalid GET request on add watcher'
+        )
         return HttpResponse('Method not allowed', status=405)
 
 
@@ -271,9 +349,23 @@ def remove_watcher(request):
             if listing.watchers.filter(pk=request.user.id).exists():
                 listing.watchers.remove(request.user)
                 listing.save()
+                logger.info(
+                    request.user.id,
+                    f'removed as watcher on Listing: {listing.id}'
+                )
+            else:
+                logger.warning(
+                    request.user.id,
+                    f'attempted to remove as watcher on '
+                    f'Listing {listing.id} when not a watcher'
+                )
 
         except (Listing.DoesNotExist, KeyError, ValueError):
             # TODO: create 'something went wrong' page before redirect
+            logger.warning(
+                request.user.id,
+                f'failed to get listing {request.POST.get("listing_id")}'
+            )
             return HttpResponseRedirect(reverse('index'))
         else:
             return HttpResponseRedirect(
@@ -281,6 +373,10 @@ def remove_watcher(request):
             )
 
     else:
+        logger.warning(
+            request.user.id,
+            f'Invalid GET request on remove watcher'
+        )
         return HttpResponse('Method not allowed', status=405)
 
 
@@ -288,6 +384,10 @@ def remove_watcher(request):
 def read_watchlist(request):
 
     listings = Listing.objects.filter(watchers=request.user)
+    logger.debug(
+        request.user.id,
+        f'Loaded watchlist of {len(listings)} listings'
+    )
 
     return render(request, 'auctions/watchlist.html', {
         'listings': listings
@@ -300,6 +400,10 @@ def read_watchlist(request):
 def read_categories(request):
 
     categories = Category.objects.all()
+    logger.debug(
+        request.user.id,
+        f'Loaded categories view with {len(categories)} categories'
+    )
 
     return render(request, 'auctions/categories.html', {
         'categories': categories
@@ -310,8 +414,16 @@ def read_category(request, pk):
 
     try:
         category = Category.objects.get(pk=pk)
+        logger.debug(
+            request.user.id,
+            f'Loaded Category: {category} view'
+        )
     except Category.DoesNotExist:
         category = None
+        logger.warning(
+            request.user.id,
+            f'Attempted load category with bad id: {pk}'
+        )
 
     return render(request, 'auctions/category.html', {
         'category': category
@@ -336,10 +448,23 @@ def create_comment(request):
                 'content': content
             })
             if comment.is_valid():
-                comment.save()
-
+                comment = comment.save()
+                logger.info(
+                    request.user.id,
+                    f'Created Comment {comment.id} on Listing: {listing.id}'
+                )
+            else:
+                logger.warning(
+                    request.user.id,
+                    f'attempted to create invalid comment on '
+                    f'Listing {listing.id}'
+                )
         except (Listing.DoesNotExist, KeyError, ValueError):
             # TODO: create 'something went wrong' page before redirect
+            logger.warning(
+                request.user.id,
+                f'failed to get listing {request.POST.get("listing_id")}'
+            )
             return HttpResponseRedirect(reverse('index'))
         else:
             return HttpResponseRedirect(
@@ -347,6 +472,10 @@ def create_comment(request):
             )
 
     else:
+        logger.warning(
+            request.user.id,
+            f'Invalid GET request on create comment'
+        )
         return HttpResponse('Method not allowed', status=405)
 
 
