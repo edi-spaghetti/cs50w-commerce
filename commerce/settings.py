@@ -11,9 +11,53 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import logging.config
+from django.utils.log import DEFAULT_LOGGING
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Set up logging
+LOGGING_CONFIG = None
+LOGLEVEL = os.environ.get('LOGLEVEL', 'info').upper()
+logging.config.dictConfig({
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'django.server': DEFAULT_LOGGING['formatters']['django.server'],
+        'standard': {
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s | %(message)s',
+        },
+    },
+    'handlers': {
+        'django.server': DEFAULT_LOGGING['handlers']['django.server'],
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard',
+            'level': LOGLEVEL,
+        },
+        'auctions_file': {
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'formatter': 'standard',
+            'level': 'DEBUG',
+            'filename': os.path.join(BASE_DIR, 'logs', 'auctions.log'),
+            'when': 'D',
+            'utc': True,
+        },
+    },
+    'loggers': {
+        'django.server': DEFAULT_LOGGING['loggers']['django.server'],
+        '': {
+            'level': 'WARNING',
+            'handlers': ['console', 'auctions_file'],
+        },
+        'auctions': {
+            'level': 'DEBUG',
+            'handlers': ['console', 'auctions_file'],
+            'propagate': False,
+        },
+    },
+})
 
 
 # Quick-start development settings - unsuitable for production
@@ -126,3 +170,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = ''
 
+# avoid logging file access errors in debug mode where a file watcher is on
+# a separate process to the main runserver process. Adapted from here:
+# https://stackoverflow.com/questions/26682413/django-rotating-file-handler-stuck-when-file-is-equal-to-maxbytes
+if DEBUG and os.environ.get('RUN_MAIN', None) != 'true':
+    LOGGING_CONFIG = DEFAULT_LOGGING

@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
@@ -15,10 +17,16 @@ from .models import (
 )
 
 
+logger = logging.getLogger(__name__)
+
+
 def index(request):
 
+    listings = Listing.objects.filter(is_open=True)
+    logger.debug(f'Loading {len(listings)} listings on index')
+
     return render(request, 'auctions/index.html', {
-        'listings': Listing.objects.filter(is_open=True)
+        'listings': listings
     })
 
 
