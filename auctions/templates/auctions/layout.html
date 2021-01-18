@@ -63,15 +63,21 @@
                             </li>
                             <!-- Account Widget -->
                             <li>
-                                <!-- TODO: widget icons -->
-                                <a href="{% url 'read_watchlist' %}">W</a>
+                                <!-- TODO: widget icon dropdown menus -->
+                                <a href="{% url 'read_watchlist' %}">
+                                    <span class="icon_star"></span>
+                                </a>
                             </li>
                             <li>
-                                <a href="{% url 'create_listing' %}">L</a>
+                                <a href="{% url 'create_listing' %}">
+                                    <span class="icon_currency"></span>
+                                </a>
                             </li>
                             <li>
                                 <!-- TODO: my bids -->
-                                <a href="">B</a>
+                                <a href="/">
+                                    <span class="icon_heart_alt"></span>
+                                </a>
                             </li>
                         {% else %}
                             <!-- Authentication -->
