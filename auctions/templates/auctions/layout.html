@@ -26,6 +26,13 @@
                             <li>
                                 <a href="{% url 'index' %}">home</a>
                             </li>
+                            {% for top_cat in top_categories %}
+                            {% if top_cat %}
+                            <li>
+                                <a href="{% url 'read_category' top_cat.id %}">{{ top_cat.name }}</a>
+                            </li>
+                            {% endif %}
+                            {% endfor %}
                             <!-- TODO: Top 3 Categories -->
                             <li>
                                 <a href="{% url 'read_categories' %}">all categories</a>

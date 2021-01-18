@@ -24,8 +24,12 @@ def index(request):
     listings = Listing.objects.filter(is_open=True)
     logger.debug(request.user.id, f' viewed {len(listings)} listings on index')
 
+    top_three = Category.top_three()
+    logger.debug(request.user.id, f'view top 3 categories: {top_three}')
+
     return render(request, 'auctions/index.html', {
-        'listings': listings
+        'listings': listings,
+        'top_categories': top_three,
     })
 
 
@@ -51,12 +55,24 @@ def login_view(request):
                 logger.debug(user.id, 'login fail > incorrect password')
             except User.DoesNotExist:
                 logger.debug(username, 'login fail > incorrect username')
+
+            top_three = Category.top_three()
+            logger.debug(request.user.id,
+                         f'view top 3 categories: {top_three}')
+
             return render(request, 'auctions/login.html', {
-                'message': 'Invalid username and/or password.'
+                'message': 'Invalid username and/or password.',
+                'top_categories': top_three,
             })
     else:
         logger.debug(request.user.id, 'loaded login view')
-        return render(request, 'auctions/login.html')
+
+        top_three = Category.top_three()
+        logger.debug(request.user.id, f'view top 3 categories: {top_three}')
+
+        return render(request, 'auctions/login.html', {
+            'top_categories': top_three,
+        })
 
 
 def logout_view(request):
@@ -79,8 +95,14 @@ def register(request):
                 request.user.id,
                 'Attempted register password no match'
             )
+
+            top_three = Category.top_three()
+            logger.debug(request.user.id,
+                         f'view top 3 categories: {top_three}')
+
             return render(request, 'auctions/register.html', {
-                'message': 'Passwords must match.'
+                'message': 'Passwords must match.',
+                'top_categories': top_three,
             })
 
         # Attempt to create new user
@@ -96,15 +118,27 @@ def register(request):
                 request.user.id,
                 f'failed register existing username: {username}'
             )
+
+            top_three = Category.top_three()
+            logger.debug(request.user.id,
+                         f'view top 3 categories: {top_three}')
+
             return render(request, 'auctions/register.html', {
-                'message': 'Username already taken.'
+                'message': 'Username already taken.',
+                'top_categories': top_three,
             })
         logger.debug(user.id, 'successful login')
         login(request, user)
         return HttpResponseRedirect(reverse('index'))
     else:
         logger.debug(request.user.id, 'loaded register view')
-        return render(request, 'auctions/register.html')
+
+        top_three = Category.top_three()
+        logger.debug(request.user.id, f'view top 3 categories: {top_three}')
+
+        return render(request, 'auctions/register.html', {
+            'top_categories': top_three,
+        })
 
 
 # ================================== Forms ====================================
@@ -162,13 +196,24 @@ def create_listing(request):
             )
         else:
             logger.debug(request.user.id, 'Invalid create listing attempt')
+
+            top_three = Category.top_three()
+            logger.debug(request.user.id,
+                         f'view top 3 categories: {top_three}')
+
             return render(request, 'auctions/create_listing.html', {
                 'form': form,
+                'top_categories': top_three,
             })
+
+    top_three = Category.top_three()
+    logger.debug(request.user.id,
+                 f'view top 3 categories: {top_three}')
 
     logger.debug(request.user.id, 'Loaded create listing view')
     return render(request, 'auctions/create_listing.html', {
-        'form': NewListingForm()
+        'form': NewListingForm(),
+        'top_categories': top_three,
     })
 
 
@@ -181,10 +226,14 @@ def read_listing(request, pk):
 
     logger.debug(request.user.id, f'Loaded listing: {listing}')
 
+    top_three = Category.top_three()
+    logger.debug(request.user.id, f'view top 3 categories: {top_three}')
+
     return render(request, 'auctions/listing.html', {
         'listing': listing,
         'on_watchlist': listing.watchers.filter(pk=request.user.id).exists(),
         'insufficient_bid': False,
+        'top_categories': top_three,
     })
 
 
@@ -267,11 +316,16 @@ def create_bid(request):
                             f'Attempted bid below minimum'
                         )
 
+                        top_three = Category.top_three()
+                        logger.debug(request.user.id,
+                                     f'view top 3 categories: {top_three}')
+
                         return render(request, 'auctions/listing.html', {
                             'listing': listing,
                             'on_watchlist': listing.watchers.filter(
                                 pk=request.user.id).exists(),
-                            'insufficient_bid': True
+                            'insufficient_bid': True,
+                            'top_categories': top_three,
                         })
 
         except (Listing.DoesNotExist, KeyError, ValueError):
@@ -389,8 +443,12 @@ def read_watchlist(request):
         f'Loaded watchlist of {len(listings)} listings'
     )
 
+    top_three = Category.top_three()
+    logger.debug(request.user.id, f'view top 3 categories: {top_three}')
+
     return render(request, 'auctions/watchlist.html', {
-        'listings': listings
+        'listings': listings,
+        'top_categories': top_three,
     })
 
 
@@ -405,8 +463,12 @@ def read_categories(request):
         f'Loaded categories view with {len(categories)} categories'
     )
 
+    top_three = Category.top_three()
+    logger.debug(request.user.id, f'view top 3 categories: {top_three}')
+
     return render(request, 'auctions/categories.html', {
-        'categories': categories
+        'categories': categories,
+        'top_categories': top_three,
     })
 
 
@@ -425,8 +487,12 @@ def read_category(request, pk):
             f'Attempted load category with bad id: {pk}'
         )
 
+    top_three = Category.top_three()
+    logger.debug(request.user.id, f'view top 3 categories: {top_three}')
+
     return render(request, 'auctions/category.html', {
-        'category': category
+        'category': category,
+        'top_categories': top_three,
     })
 
 

@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.db.models import Max
+from django.db.models import Max, Sum
 
 
 logger = logging.getLogger(__name__)
@@ -27,6 +27,24 @@ class Category(models.Model):
     @property
     def active_listings(self):
         return Listing.objects.filter(category=self, is_open=True)
+
+    @classmethod
+    def top_three(cls):
+        """
+        Method to get the three categories as determined by number
+        of active listings
+        :return:
+        """
+
+        # get categories in order of listings count
+        categories = cls.objects.annotate(
+            sum=Sum('listings__is_open')).order_by('-sum')
+
+        # ensure we return a list of three objects, even if no category
+        # objects are found
+        categories = list(categories[:3])
+        categories.extend([None, None, None])
+        return categories[:3]
 
 
 def rename_image_files(instance, filename):
