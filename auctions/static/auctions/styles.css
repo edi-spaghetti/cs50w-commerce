@@ -1,5 +1,99 @@
 body {
     padding: 10px;
+    font-family: "Montserrat", sans-serif;
 }
 
-# TODO: improved look and feel
+hr {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+ul li {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: inline-block;
+    position: relative;
+}
+
+.header {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.nav__logo {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.nav__logo img {
+    width: 40%;
+}
+
+.nav__menu {
+    padding-top: 25px;
+    padding-bottom: 15px;
+}
+
+.nav__menu ul li a {
+    font-size: 15px;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #111111;
+    font-weight: 500;
+    display: block;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.nav__menu ul li a:before {
+    position: absolute;
+    left: 50%;
+    bottom: -5px;
+    width: 0px;
+    height: 2px;
+    content: "";
+    background: rgb(200, 20, 20);
+    opacity: 0;
+    transition: all 0.5s ease-in-out;
+    transition-duration: 0.75s;
+}
+
+.nav__menu ul li a:after {
+    position: absolute;
+    right: 50%;
+    bottom: -5px;
+    width: 0px;
+    height: 2px;
+    content: "";
+    background: rgb(200, 20, 20);
+    opacity: 0;
+    transition: all 0.5s ease-in-out;
+    transition-duration: 0.75s;
+}
+
+.nav__menu ul li a:hover:before {
+    width: 50%;
+    left: 50%;
+    opacity: 1;
+}
+
+.nav__menu ul li a:hover:after {
+    width: 50%;
+    right: 50%;
+    opacity: 1;
+}
+
+.nav__account {
+    padding-top: 10px;
+    padding-bottom: 5px;
+}
+
+.nav__account ul li a {
+    font-size: 15px;
+    text-transform: capitalize;
+    text-decoration: none;
+    color: #111111;
+    display: block;
+    padding-right: 15px;
+}
