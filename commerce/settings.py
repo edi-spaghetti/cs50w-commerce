@@ -174,4 +174,4 @@ STATIC_ROOT = ''
 # a separate process to the main runserver process. Adapted from here:
 # https://stackoverflow.com/questions/26682413/django-rotating-file-handler-stuck-when-file-is-equal-to-maxbytes
 if DEBUG and os.environ.get('RUN_MAIN', None) != 'true':
-    LOGGING_CONFIG = DEFAULT_LOGGING
+    LOGGING_CONFIG = 'logging.config.dictConfig'
