@@ -187,7 +187,7 @@ def create_listing(request):
         if valid and positive:
             listing = form.save(commit=False)
             listing.owner = request.user
-            listing = listing.save()
+            listing.save()
             logger.info(request.user.id, f'New Listing: {listing}')
             return HttpResponseRedirect(
                 reverse(
