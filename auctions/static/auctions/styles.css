@@ -12,7 +12,7 @@
 	font-style: normal;
 }
 
-.icon_star, .icon_currency, .icon_heart_alt {
+.icon_star, .icon_currency, .icon_heart_alt, .icon_image {
 	font-family: 'ElegantIcons';
 	speak: none;
 	font-style: normal;
@@ -33,6 +33,10 @@
 
 .icon_heart_alt:before {
 	content: "\e030";
+}
+
+.icon_image:before {
+	content: "\e005";
 }
 
 /* NAVIGATION */
@@ -92,7 +96,7 @@ ul li {
     width: 0px;
     height: 2px;
     content: "";
-    background: rgb(200, 20, 20);
+    background: #99c2ff;
     opacity: 0;
     transition: all 0.5s ease-in-out;
     transition-duration: 0.75s;
@@ -105,7 +109,7 @@ ul li {
     width: 0px;
     height: 2px;
     content: "";
-    background: rgb(200, 20, 20);
+    background: #99c2ff;
     opacity: 0;
     transition: all 0.5s ease-in-out;
     transition-duration: 0.75s;
@@ -135,4 +139,63 @@ ul li {
     color: #111111;
     display: block;
     padding-right: 15px;
+}
+
+/* LISTINGS */
+
+.listings {
+    padding-top: 60px;
+    padding-bottom: 60px;
+}
+
+.listings__header {
+    padding-top: 25px;
+    padding-bottom: 25px;
+}
+
+.listings__title {
+    font-weight: 600;
+    text-transform: uppercase;
+    position: relative;
+    display: inline-block;
+}
+
+.listings__top-categories ul li a {
+    font-size: 15px;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #111111;
+    font-weight: 500;
+    display: block;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.listing__photo {
+    position: relative;
+    padding-top: 66.66%;
+}
+
+.listing__photo_img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 160px;
+}
+
+.listing__photo_img-default {
+    position: absolute;
+    top: 25%;
+    left: 33%;
+    font-size: 100px;
+    color: #99c2ff;
+}
+
+.listing__text {
+    text-align: center;
+}
+
+.listing__price {
+    font-weight: 500;
 }

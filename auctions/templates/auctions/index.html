@@ -1,13 +1,72 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
 
-    <ul>
-    {% for listing in listings %}
-        <li>
-            <a href="{% url 'read_listing' listing.id %}">{{ listing.title }}</a>
-        </li>
-    {% endfor %}
-    </ul>
+    <!-- TODO: categories thumbnails -->
+    <section class="categories">
+    </section>
+
+    <section class="listings">
+        <div class="container">
+
+            <!-- Listings Header -->
+            <div class="row listings__header">
+                <!-- Title -->
+                <div class="col-lg-4 col-md-4">
+                    <div class="listings__title">
+                        <h3>Active Listings</h3>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="col-lg-8 col-md-8">
+                    <div class="listings__top-categories">
+                        <ul>
+                            <li>
+                              <a href="{% url 'index' %}">All</a>
+                            </li>
+                        {% for top_cat in top_categories %}
+                            {% if top_cat %}
+                            <li>
+                                <a href="{% url 'read_category' top_cat.id %}">{{ top_cat.name }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                            <!-- TODO: add support for misc (non-categorised listings) -->
+                            <li>
+                                <a href="{% url 'read_category' 0 %}">Misc</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Listing Items -->
+            <div class="row listings__items">
+            {% for listing in listings %}
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="listing__item">
+                        <div class="listing__photo">
+                        <!-- TODO: improve image sizing and placement -->
+                        {% if listing.photo %}
+                            <img class="listing__photo_img" src="{{ listing.photo.url }}">
+                        {% else %}
+                            <span class="icon_image listing__photo_img-default"></span>
+                        {% endif %}
+                        </div>
+                        <div class="listing__text">
+                            <h6>
+                                <a href="{% url 'read_listing' listing.id %}">{{ listing.title }}</a>
+                            </h6>
+                            <!-- TODO: activity monitor -->
+                            <!-- TODO: currency -->
+                            <div class="listing__price">{{ listing.highest_bid }} ¥</div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+
+        </div>
+    </section>
 {% endblock %}
