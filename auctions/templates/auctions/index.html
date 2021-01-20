@@ -44,26 +44,7 @@
             <!-- Listing Items -->
             <div class="row listings__items">
             {% for listing in listings %}
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                    <div class="listing__item">
-                        <div class="listing__photo">
-                        <!-- TODO: improve image sizing and placement -->
-                        {% if listing.photo %}
-                            <img class="listing__photo_img" src="{{ listing.photo.url }}">
-                        {% else %}
-                            <span class="icon_image listing__photo_img-default"></span>
-                        {% endif %}
-                        </div>
-                        <div class="listing__text">
-                            <h6>
-                                <a href="{% url 'read_listing' listing.id %}">{{ listing.title }}</a>
-                            </h6>
-                            <!-- TODO: activity monitor -->
-                            <!-- TODO: currency -->
-                            <div class="listing__price">{{ listing.highest_bid }} ¥</div>
-                        </div>
-                    </div>
-                </div>
+                {% include "auctions/listing_item.html" %}
             {% endfor %}
             </div>
 

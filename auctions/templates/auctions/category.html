@@ -2,18 +2,37 @@
 
 {% block body %}
     {% if category %}
-        <h2>{{ category.name }}</h2>
+    <section class="listing">
+        <div class="container">
 
-        <ul>
-        {% for listing in category.active_listings %}
-            <li>
-                <a href="{% url 'read_listing' listing.id %}">{{ listing.title }}</a>
-            </li>
-        {% empty %}
-            <li>No active listings for this category :(</li>
-        {% endfor %}
-        </ul>
+            <!-- Category Header -->
+            <div class="row listings__header">
+                <!-- Title -->
+                <div class="col-lg-4 col-md-4">
+                    <div class="listings__title">
+                        <h3>{{ category.name }}</h3>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="col-lg-8 col-md-8">
+                    <!-- TODO: category filters -->
+                </div>
+            </div>
+
+            <!-- Listing Items -->
+            <div class="row listing__items">
+            {% for listing in category.active_listings %}
+                {% include "auctions/listing_item.html" %}
+            {% empty %}
+                <!-- TODO: no_listing_item template -->
+                <div>No active listings for this category :(</div>
+            {% endfor %}
+            </div>
+        </div>
+    </section>
     {% else %}
+        <!-- TODO: no_category template -->
         <h2>The category you're looking for doesn't exist or was moved</h2>
     {% endif %}
 {% endblock %}
