@@ -1,13 +1,33 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>My Watchlist</h2>
+    <section class="listing">
+        <div class="container">
 
-    <ul>
-    {% for listing in listings %}
-        <li>
-            <a href="{% url 'read_listing' listing.id %}">{{ listing.title }}</a>
-        </li>
-    {% endfor %}
-    </ul>
+            <!-- Category Header -->
+            <div class="row listings__header">
+                <!-- Title -->
+                <div class="col-lg-4 col-md-4">
+                    <div class="listings__title">
+                        <h3>My Watchlist</h3>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="col-lg-8 col-md-8">
+                    <!-- TODO: watchlist filters -->
+                </div>
+            </div>
+
+            <!-- Listing Items -->
+            <div class="row listing__items">
+            {% for listing in listings %}
+                {% include "auctions/listing_item.html" %}
+            {% empty %}
+                <!-- TODO: no_listing_item template -->
+                <div>You're not watching any listings yet</div>
+            {% endfor %}
+            </div>
+        </div>
+    </section>
 {% endblock %}
