@@ -141,19 +141,19 @@ ul li {
     padding-right: 15px;
 }
 
-/* LISTINGS */
+/* LISTINGS and CATEGORIES */
 
-.listings {
+.listings, .categories {
     padding-top: 60px;
     padding-bottom: 60px;
 }
 
-.listings__header {
+.listings__header, .categories__header {
     padding-top: 25px;
     padding-bottom: 25px;
 }
 
-.listings__title {
+.listings__title, .categories__title {
     font-weight: 600;
     text-transform: uppercase;
     position: relative;
@@ -198,4 +198,13 @@ ul li {
 
 .listing__price {
     font-weight: 500;
+}
+
+.category__item {
+    height: 350px;
+    display: flex;
+    align-items: center;
+    padding-left: 30px;
+    margin-bottom: 10px;
+    margin-right: 10px;
 }

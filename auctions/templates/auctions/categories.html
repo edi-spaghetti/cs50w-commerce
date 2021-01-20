@@ -1,13 +1,36 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Categories</h2>
+    <section class="categories">
+        <div class="container">
 
-    <ul>
-    {% for category in categories %}
-        <li>
-            <a href="{% url 'read_category' category.id %}">{{ category.name }}</a>
-        </li>
-    {% endfor %}
-    </ul>
+            <!-- Category Header -->
+            <div class="row categories__header">
+                <!-- Title -->
+                <div class="col-lg-4 col-md-4">
+                    <div class="categories__title">
+                        <h3>Categories</h3>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="col-lg-8 col-md-8">
+                    <!-- TODO: category filters -->
+                </div>
+            </div>
+
+            <!-- Category Items -->
+            <div class="row category__items">
+            {% for category in categories %}
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                    <!-- TODO: category_item template -->
+                    <a href="{% url 'read_category' category.id %}">{{ category.name }}</a>
+                </div>
+            {% empty %}
+                <!-- TODO: no_category_item template -->
+                <div>No Categories Yet :(</div>
+            {% endfor %}
+            </div>
+        </div>
+    </section>
 {% endblock %}
