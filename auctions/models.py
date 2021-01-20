@@ -5,6 +5,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import Max, Sum
 
+from .utils import get_random_colour
+
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +17,26 @@ class User(AbstractUser):
 
 class Category(models.Model):
 
+    PINK = 'pink'
+    PEACH = 'peachpuff'
+    TAN = 'tan'
+    GOLD = 'lightgoldrenrod1'
+    GREEN = 'palegreen1'
+    TURQUOISE = 'paleturquoise1'
+    BLUE = 'lightsteelblue2'
+    THISTLE = 'thistle2'
+
+    BG_COLOURS = (
+        (PINK, 'pink'),
+        (PEACH, 'peach'),
+        (TAN, 'tan'),
+        (GOLD, 'gold'),
+        (GREEN, 'green'),
+        (TURQUOISE, 'turquoise'),
+        (BLUE, 'blue'),
+        (THISTLE, 'thistle'),
+    )
+
     def __str__(self):
         return self.name
 
@@ -24,9 +46,19 @@ class Category(models.Model):
         unique=True,
     )
 
+    bg_colour = models.CharField(
+        max_length=16,
+        choices=BG_COLOURS,
+        default=get_random_colour,
+    )
+
     @property
     def active_listings(self):
         return Listing.objects.filter(category=self, is_open=True)
+
+    @property
+    def num_listings(self):
+        return len(self.active_listings)
 
     @classmethod
     def top_three(cls):

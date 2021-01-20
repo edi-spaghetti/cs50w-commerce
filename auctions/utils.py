@@ -1,4 +1,4 @@
-
+import random
 import logging
 
 
@@ -34,3 +34,28 @@ class RequestLogger(object):
 
     def critical(self, uid, message):
         self._logger.critical(f'User: {uid} > {message}')
+
+
+PINK = 'pink'
+PEACH = 'peachpuff'
+TAN = 'tan'
+GOLD = 'lightgoldrenrod1'
+GREEN = 'palegreen1'
+TURQUOISE = 'paleturquoise1'
+BLUE = 'lightsteelblue2'
+THISTLE = 'thistle2'
+
+BG_COLOURS = (
+    (PINK, 'pink'),
+    (PEACH, 'peach'),
+    (TAN, 'tan'),
+    (GOLD, 'gold'),
+    (GREEN, 'green'),
+    (TURQUOISE, 'turquoise'),
+    (BLUE, 'blue'),
+    (THISTLE, 'thistle'),
+)
+
+
+def get_random_colour():
+    return random.choice(BG_COLOURS)[0]
