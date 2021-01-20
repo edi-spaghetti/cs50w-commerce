@@ -23,8 +23,7 @@
             <div class="row category__items">
             {% for category in categories %}
                 <div class="col-lg-3 col-md-3 col-sm-3">
-                    <!-- TODO: category_item template -->
-                    <a href="{% url 'read_category' category.id %}">{{ category.name }}</a>
+                {% include "auctions/category_item.html" %}
                 </div>
             {% empty %}
                 <!-- TODO: no_category_item template -->

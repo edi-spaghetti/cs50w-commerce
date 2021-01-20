@@ -1,0 +1,8 @@
+<div class="category__item" style="background-color: {{ category.bg_colour }};">
+    <!-- TODO: category item images -->
+    <div class="category__text">
+        <h4>{{ category.name }}</h4>
+        <p>{{ category.num_listings }} listings</p>
+        <a href="{% url 'read_category' category.id %}">Browse</a>
+    </div>
+</div>
