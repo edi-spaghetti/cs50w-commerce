@@ -200,8 +200,21 @@ ul li {
     font-weight: 500;
 }
 
+.categories {
+    background-color: ghostwhite;
+}
+
+.category__largest_item > div {
+    height: 510px;
+}
+
+.category__largest_item div h4 {
+    font-family: "Mistral";
+    font-size: 5rem;
+}
+
 .category__item {
-    height: 350px;
+    height: 250px;
     display: flex;
     align-items: center;
     padding-left: 30px;

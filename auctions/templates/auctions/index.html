@@ -2,8 +2,31 @@
 
 {% block body %}
 
-    <!-- TODO: categories thumbnails -->
     <section class="categories">
+        <div class="container-fluid">
+            <div class="row">
+
+                <!-- Top Category -->
+                <div class="col-lg-8 p-0">
+                    <div class="category__largest_item">
+                    {% for category in top_categories|slice:":1" %}
+                        {% include "auctions/category_item.html" %}
+                    {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Runner-up Categories -->
+                <div class="col-lg-4 p-0">
+                    <div class="category__large_item">
+                    {% for category in top_categories|slice:"1:" %}
+                        {% if category %}
+                            {% include "auctions/category_item.html" %}
+                        {% endif %}
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
     <section class="listings">
