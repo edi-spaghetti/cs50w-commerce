@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import Max, Sum
 
-from .utils import get_random_colour
+from .utils import get_random_colour, BG_COLOURS
 
 
 logger = logging.getLogger(__name__)
@@ -16,26 +16,6 @@ class User(AbstractUser):
 
 
 class Category(models.Model):
-
-    PINK = 'pink'
-    PEACH = 'peachpuff'
-    TAN = 'tan'
-    GOLD = 'lightgoldrenrod1'
-    GREEN = 'palegreen1'
-    TURQUOISE = 'paleturquoise1'
-    BLUE = 'lightsteelblue2'
-    THISTLE = 'thistle2'
-
-    BG_COLOURS = (
-        (PINK, 'pink'),
-        (PEACH, 'peach'),
-        (TAN, 'tan'),
-        (GOLD, 'gold'),
-        (GREEN, 'green'),
-        (TURQUOISE, 'turquoise'),
-        (BLUE, 'blue'),
-        (THISTLE, 'thistle'),
-    )
 
     def __str__(self):
         return self.name

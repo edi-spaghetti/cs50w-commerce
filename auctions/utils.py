@@ -39,11 +39,12 @@ class RequestLogger(object):
 PINK = 'pink'
 PEACH = 'peachpuff'
 TAN = 'tan'
-GOLD = 'lightgoldrenrod1'
-GREEN = 'palegreen1'
-TURQUOISE = 'paleturquoise1'
-BLUE = 'lightsteelblue2'
-THISTLE = 'thistle2'
+GOLD = 'palegoldenrod'
+GREEN = 'palegreen'
+CYAN = 'lightcyan'
+BLUE = 'powderblue'
+AQUAMARINE = 'mediumaquamarine'
+THISTLE = 'thistle'
 
 BG_COLOURS = (
     (PINK, 'pink'),
@@ -51,8 +52,9 @@ BG_COLOURS = (
     (TAN, 'tan'),
     (GOLD, 'gold'),
     (GREEN, 'green'),
-    (TURQUOISE, 'turquoise'),
+    (CYAN, 'cyan'),
     (BLUE, 'blue'),
+    (AQUAMARINE, 'aqua'),
     (THISTLE, 'thistle'),
 )
 
