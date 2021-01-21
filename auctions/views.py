@@ -144,6 +144,10 @@ def register(request):
 # ================================== Forms ====================================
 
 
+class StyledFileInput(forms.FileInput):
+    template_name = 'auctions/widgets/file.html'
+
+
 class NewListingForm(forms.ModelForm):
     class Meta:
         model = Listing
@@ -151,6 +155,7 @@ class NewListingForm(forms.ModelForm):
         widgets = {
             'description': forms.Textarea(attrs={'cols': 80, 'rows': 20}),
             'starting_bid': forms.NumberInput(attrs={'min': 1, 'step': 1}),
+            'photo': StyledFileInput(),
         }
 
 

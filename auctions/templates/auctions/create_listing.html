@@ -1,13 +1,40 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Create New Listing</h2>
+    <section class="new_listing">
+        <div class="container">
 
-    <form action="{% url 'create_listing' %}" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <table>
-            {{ form.as_table }}
-        </table>
-        <input type="submit" value="Create">
-    </form>
+            <!-- New Listing Header -->
+            <div class="row new_listing__header">
+                <!-- Title -->
+                <div class="col-lg-4 col-md-4">
+                    <div class="new_listing__title">
+                        <h3>New Listing</h3>
+                    </div>
+                </div>
+
+                <!-- Features -->
+                <div class="col-lg-8 col-md-8">
+                    <!-- TODO: new listing features -->
+                </div>
+            </div>
+
+            <!-- New Listing Form -->
+            <form class="new_listing__form" action="{% url 'create_listing' %}" method="post" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-lg-12 new_listing__inputs">
+                        {% csrf_token %}
+                        <table>
+                            {{ form.as_table }}
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12 text-right new_listing__submit">
+                        <button class="btn btn-outline-primary" type="submit">Create</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
 {% endblock %}
