@@ -1,69 +1,98 @@
-<h2>{{ listing.title }}</h2>
-{% if user.is_authenticated %}
-    <!-- Add/Remove from Watchlist -->
-    {% if user != listing.owner %}
-        {% if on_watchlist %}
-            <form action="{% url 'remove_watcher' %}" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="listing_id" value="{{ listing.id }}">
-                <button class="btn btn-link" type="submit">Remove From Watchlist</button>
-            </form>
-        {% else %}
-            <form action="{% url 'add_watcher' %}" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="listing_id" value="{{ listing.id }}">
-                <button class="btn btn-link" type="submit">Add To Watchlist</button>
-            </form>
-        {% endif %}
-    {% endif %}
-    <!-- Auction Winner -->
-    {% if listing.is_open %}
-        {% if user == listing.highest_bidder %}
-            <p>Good luck {{ user.first_name }}, you're in the lead to win the auction!</p>
-        {% endif %}
-    {% else %}
-        {% if user == listing.highest_bidder %}
-            <p>Congratulations {{ user.first_name }}, you won the auction!</p>
-        {% endif %}
-    {% endif %}
-{% endif %}
-<p>
-    {{ listing.description }}
-</p>
-<p>
-    {% if listing.photo %}
-        <img src="{{ listing.photo.url }}">
-    {% else %}
-        <img src="/images/listing/no_photo.png">
-        <div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-    {% endif %}
-</p>
-<p>
-    Current Price: {{ listing.highest_bid }}
-</p>
-<p>
-    Status: {% if listing.is_open %}Open{% else %}Closed{% endif %}
-</p>
-{% if user == listing.owner %}
-    {% if listing.is_open %}
-        <form action="{% url 'close_listing' %}" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="listing_id" value="{{ listing.id }}">
-            <button class="btn btn-danger" type="submit">Close Auction</button>
-        </form>
-    {% endif %}
-{% elif user.is_authenticated %}
-    <form action="{% url 'create_bid' %}" method="post">
-        {% csrf_token %}
-        <input type="hidden" name="listing_id" value="{{ listing.id }}">
-        {% if insufficient_bid %}
-        <div class="alert alert-warning" role="alert">
-            <div>Insufficient Bid, must be higher than {{ listing.new_bid_minimum }}</div>
-        {% endif %}
-            <input type="number" name="value" step="{{ listing.bid_increment }}" min="{{ listing.new_bid_minimum }}">
-        {% if insufficient_bid %}</div>{% endif %}
-        <button class="btn btn-primary" type="submit">Submit Bid</button>
-    </form>
-{% endif %}
+<section class="listing__detail">
+    <div class="container">
+
+        <!-- The Listing -->
+        <div class="row listing__detail_item">
+
+            <!-- Photo -->
+            <div class="col-lg-6">
+                <div class="listing__detail_img">
+                {% if listing.photo %}
+                    <img class="listing__detail_large_photo_img" src="{{ listing.photo.url }}">
+                {% else %}
+                    <span class="icon_image listing__detail_large_photo_img-default"></span>
+                {% endif %}
+                </div>
+            </div>
+
+            <!-- Text -->
+            <div class="col-lg-6">
+
+                <!-- Header -->
+                <h3 class="listing__detail_title">
+                    {{ listing.title }}
+                    <!-- Auction Winner -->
+                    {% if listing.is_open %}
+                        <span class="listing__detail_open">Open</span>
+                        {% if user == listing.highest_bidder %}
+                        <span>Good luck {{ user.first_name }}, you're in the lead to win the auction!</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="listing__detail_closed">Closed</span>
+                        {% if user == listing.highest_bidder %}
+                        <span>Congratulations {{ user.first_name }}, you won the auction!</span>
+                        {% endif %}
+                    {% endif %}
+                </h3>
+
+                <!-- Details -->
+                <div class="listing__detail_price">{{ listing.highest_bid }} ¥</div>
+                <div class="listing__detail_description">{{ listing.description }}</div>
+
+                <!-- Forms -->
+                <div class="listing__detail_widget">
+                {% if user != listing.owner %}
+
+                    <!-- Create Bid Widget -->
+                    <div class="listing__detail_bid_widget">
+                            <!-- TODO: invalid fields styling -->
+                            <form action="{% url 'create_bid' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                                <input type="number" name="value" step="{{ listing.bid_increment }}" min="{{ listing.new_bid_minimum }}">
+                                <!-- TODO: not logged in user pop up -->
+                                <button class="btn btn-outline-primary" type="submit">Submit</button>
+                            </form>
+                    </div>
+
+                    <!-- Add/Remove from Watchlist -->
+                    {% if on_watchlist %}
+                    <div class="listing__detail_unwatch_widget">
+                        <form action="{% url 'remove_watcher' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                            <button class="btn btn-link" type="submit">Remove From Watchlist</button>
+                        </form>
+                    </div>
+                    {% else %}
+                    <div class="listing__detail_watch_widget">
+                        <form action="{% url 'add_watcher' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                            <button class="btn btn-link" type="submit">Add To Watchlist</button>
+                        </form>
+                    </div>
+                    {% endif %}
+
+                {% elif user == listing.owner and listing.is_open %}
+
+                    <!-- Close Listing -->
+                    <div class="listing__detail_close_widget">
+                        <form action="{% url 'close_listing' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                            <button class="btn btn-danger" type="submit">Close Auction</button>
+                        </form>
+                    </div>
+
+                {% endif %}
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</section>
 
 {% include "auctions/comments.html" %}
