@@ -52,11 +52,24 @@ class Category(models.Model):
         categories = cls.objects.annotate(
             sum=Sum('listings__is_open')).order_by('-sum')
 
+        # remove misc as it is likely always the largest category
+        categories = categories.exclude(name='Misc')
+
         # ensure we return a list of three objects, even if no category
         # objects are found
         categories = list(categories[:3])
         categories.extend([None, None, None])
         return categories[:3]
+
+
+def get_misc():
+    try:
+        m = Category.objects.get(name='Misc')
+    except Category.DoesNotExist:
+        m = Category(name='Misc')
+        m.save()
+
+    return m.pk
 
 
 def rename_image_files(instance, filename):
@@ -100,8 +113,7 @@ class Listing(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Category',
         related_name='listings',
-        null=True,
-        blank=True,
+        default=get_misc,
     )
 
     @property
