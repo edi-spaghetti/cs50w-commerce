@@ -36,26 +36,26 @@ class RequestLogger(object):
         self._logger.critical(f'User: {uid} > {message}')
 
 
-PINK = 'pink'
-PEACH = 'peachpuff'
-TAN = 'tan'
-GOLD = 'palegoldenrod'
-GREEN = 'palegreen'
-CYAN = 'lightcyan'
-BLUE = 'powderblue'
-AQUAMARINE = 'mediumaquamarine'
-THISTLE = 'thistle'
+LIGHTSTEELBLUE = '#B0C4DE'
+LIGHTSKYBLUE = '#87CEFA'
+SKYBLUE = '#87CEEB'
+LIGTHBLUE = '#ADD8E6'
+POWDERBLUE = '#B0E0E6'
+LIGHTCYAN = '#E0FFFF'
+PALETURQUOISE = '#AFEEEE'
+AQUAMARINE = '#66CDAA'
+LIGTHSEAGREEN = '#20B2AA'
 
 BG_COLOURS = (
-    (PINK, 'pink'),
-    (PEACH, 'peach'),
-    (TAN, 'tan'),
-    (GOLD, 'gold'),
-    (GREEN, 'green'),
-    (CYAN, 'cyan'),
-    (BLUE, 'blue'),
-    (AQUAMARINE, 'aqua'),
-    (THISTLE, 'thistle'),
+    (LIGHTSTEELBLUE, 'Light Steel Blue'),
+    (LIGHTSKYBLUE, 'Light Sky Blue'),
+    (SKYBLUE, 'Sky Blue'),
+    (LIGTHBLUE, 'Light Blue'),
+    (POWDERBLUE, 'Powder Blue'),
+    (LIGHTCYAN, 'Light Cyan'),
+    (PALETURQUOISE, 'Pale Turquoise'),
+    (AQUAMARINE, 'Aquamarine'),
+    (LIGTHSEAGREEN, 'Light Sea Green'),
 )
 
 
