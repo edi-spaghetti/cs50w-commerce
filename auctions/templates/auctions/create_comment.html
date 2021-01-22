@@ -1,0 +1,6 @@
+<form action="{% url 'create_comment' %}" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="listing_id" value="{{ listing.id }}">
+    <textarea name="content">Type your comment here...</textarea>
+    <button class="btn btn-secondary" type="submit">Submit</button>
+</form>
