@@ -1,0 +1,10 @@
+<div class="listing__detail_share_widget">
+    <!-- TODO: share feature -->
+    <form action="">
+        {% csrf_token %}
+        <input type="hidden" name="listing_id" value="{{ listing.id }}">
+        <button id="listing__detail_share_widget_btn" type="submit">
+            <span class="social_share"></span>
+        </button>
+    </form>
+</div>

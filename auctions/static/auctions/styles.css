@@ -4,6 +4,7 @@
 $dark-blue: #007bff;
 $light-blue: #99c2ff;
 $red: #ca1515;
+$light-red: #CD5C5C;
 $grey: #ebebeb;
 /*
 
@@ -20,7 +21,7 @@ $grey: #ebebeb;
 	font-style: normal;
 }
 
-.icon_star, .icon_currency, .icon_heart_alt, .icon_image {
+.icon_star, .icon_currency, .icon_heart_alt, .icon_image, .social_share, .icon_mail_alt, .icon_bag_alt, .icon_close {
 	font-family: 'ElegantIcons';
 	speak: none;
 	font-style: normal;
@@ -45,6 +46,22 @@ $grey: #ebebeb;
 
 .icon_image:before {
 	content: "\e005";
+}
+
+.social_share:before {
+	content: "\e0a0";
+}
+
+.icon_mail_alt:before {
+	content: "\e010";
+}
+
+.icon_bag_alt:before {
+	content: "\e013";
+}
+
+.icon_close:before {
+	content: "\4d";
 }
 
 /* NAVIGATION */
@@ -423,7 +440,19 @@ select[name = "category"] {
     text-decoration: line-through
 }
 
-.listing__detail_bid_widget > form > div > div > input {
+/* BID WIDGET */
+
+.listing__detail_bid_widget {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.listing__detail_bid_form_element {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.listing__detail_bid_widget input {
     width: 100%;
     height: 50px;
     font-size: 1rem;
@@ -434,17 +463,27 @@ select[name = "category"] {
 
 }
 
-.listing__detail_bid_widget > form > div > div > button {
+.listing__detail_bid_widget button {
     width: 100%;
     height: 50px;
     border-radius: 50px;
 }
 
-.listing__detail_watch_widget_btn > span, .listing__detail_unwatch_widget_btn > span {
-    color: #99c2ff;
+/* ADDITIONAL WIDGET */
+
+.listing__detail_additional_widget {
+    margin-top: 15px;
+    margin-bottom: 15px;
 }
 
-.listing__detail_watch_widget_btn {
+.listing__detail_additional_widget > div {
+    display: inline-block;
+    padding-right: 15px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.listing__detail_additional_widget button {
     width: 50px;
     height: 50px;
     border: 1px solid #ebebeb;
@@ -453,16 +492,25 @@ select[name = "category"] {
     text-decoration: none;
 }
 
-.listing__detail_watch_widget_btn:focus, .listing__detail_unwatch_widget_btn:focus {
+.listing__detail_additional_widget button:focus {
     outline: none;
     box-shadow: 0 0 0 1pt #007bff;
 }
 
-.listing__detail_unwatch_widget_btn {
-    width: 50px;
-    height: 50px;
-    border: 1px solid #ebebeb;
+.listing__detail_additional_widget button > span {
+    color: #99c2ff;
+}
+
+/* unwatch widget fill dark blue */
+#listing__detail_unwatch_widget_btn {
     background-color: #007bff;
-    border-radius: 50px;
-    text-decoration: none;
+}
+
+/* close listing light red icon and outline */
+#listing__detail_close_widget_btn > span {
+    color: #CD5C5C;
+}
+
+#listing__detail_close_widget_btn:focus {
+    box-shadow: 0 0 0 1pt #CD5C5C;
 }

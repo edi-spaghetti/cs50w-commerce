@@ -1,0 +1,10 @@
+<div class="listing__detail_confirm_sale_widget">
+    <!-- TODO: confirm sale feature -->
+    <form action="">
+        {% csrf_token %}
+        <input type="hidden" name="listing_id" value="{{ listing.id }}">
+        <button id="listing__detail_confirm_sale_widget_btn" type="submit">
+            <span class="icon_bag_alt"></span>
+        </button>
+    </form>
+</div>

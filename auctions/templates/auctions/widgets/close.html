@@ -1,0 +1,9 @@
+<div class="listing__detail_close_widget">
+    <form action="{% url 'close_listing' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="listing_id" value="{{ listing.id }}">
+        <button id="listing__detail_close_widget_btn" type="submit">
+            <span class="icon_close"></span>
+        </button>
+    </form>
+</div>
