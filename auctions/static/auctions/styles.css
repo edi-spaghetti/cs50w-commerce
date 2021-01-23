@@ -336,26 +336,6 @@ input[name = "starting_bid"] {
     background: #007bff;
 }
 
-/*
-.styled_file_input_overlay {
-    position: absolute;
-    top: 0px;
-    width: 100%;
-    height: 100%;
-    border-radius: 50px;
-    border: 1px solid #99c2ff;
-}
-
-.styled_file_input_overlay:hover {
-    position: absolute;
-    top: 0px;
-    width: 100%;
-    height: 100%;
-    border-radius: 50px;
-    background: #007bff;
-}
-*/
-
 .styled_file_input > span {
     position: absolute;
     top: 0;
