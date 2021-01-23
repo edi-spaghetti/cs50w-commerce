@@ -40,7 +40,6 @@
                         {{ listing.title }}
                         <!-- Auction Winner -->
                         {% if listing.is_open %}
-                            <span class="listing__detail_open">Open</span>
                             {% if user == listing.highest_bidder %}
                             <span class="listing__detail_winner">
                                 Good luck {{ user.first_name }}, you're in the
@@ -48,7 +47,6 @@
                             </span>
                             {% endif %}
                         {% else %}
-                            <span class="listing__detail_closed">Closed</span>
                             {% if user == listing.highest_bidder %}
                             <span class="listing__detail_winner">
                                 Congratulations {{ user.first_name }}, you won
@@ -59,7 +57,16 @@
                     </h3>
 
                     <!-- Details -->
-                    <div class="listing__detail_price">{{ listing.highest_bid }} ¥</div>
+                    {% if listing.is_open %}
+                    <div class="listing__detail_price">
+                        <span class="open">{{ listing.highest_bid }} ¥</span>
+                    </div>
+                    {% else %}
+                    <div class="listing__detail_price">
+                        <span class="closed">{{ listing.highest_bid }} ¥</span>
+                        <span class="sold">Sold!</span>
+                    </div>
+                    {% endif %}
                     <div class="listing__detail_description">{{ listing.description }}</div>
 
                     <!-- Forms -->

@@ -416,6 +416,11 @@ select[name = "category"] {
     font-weight: 600;
     color: #ca1515;
     margin-bottom: 30px;
+    margin-top: 30px;
+}
+
+.listing__detail_price > span.closed {
+    text-decoration: line-through
 }
 
 .listing__detail_bid_widget > form > div > div > input {
