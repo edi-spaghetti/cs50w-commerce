@@ -6,6 +6,7 @@ $light-blue: #99c2ff;
 $red: #ca1515;
 $light-red: #CD5C5C;
 $grey: #ebebeb;
+$dark-grey: #888888;
 /*
 
 /* FONTS */
@@ -378,6 +379,38 @@ select[name = "category"] {
 
 .breadcrumb__links {
     margin-bottom: 30px;
+}
+
+.breadcrumb__links a {
+    position: relative;
+    font-size: 15px;
+    text-transform: capitalize;
+    text-decoration: none;
+    color: #111111;
+    font-weight: 500;
+    display: inline-block;
+    margin-right: 20px;
+    vertical-align: middle;
+}
+
+.breadcrumb__links a:after {
+    position: absolute;
+    right: -15px;
+    top: 0px;
+    content: ">";
+}
+
+#breadcrumb__links_listing {
+    color: #888888;
+    text-transform: none;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: min(100%, 250px);
+}
+
+#breadcrumb__links_listing:after {
+    content: "";
 }
 
 .listing__detail_large_photo_img {
