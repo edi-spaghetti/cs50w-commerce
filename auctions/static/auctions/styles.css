@@ -583,3 +583,54 @@ select[name = "category"] {
     background: #ebebeb;
     content: "";
 }
+
+.listing__comment_form {
+    border: 1px solid #ebebeb;
+    border-radius: 15px;
+    width: 100%;
+    height: auto;
+}
+
+.listing__comment_form textarea {
+    border: 1px solid #ebebeb;
+    border-radius: 20px;
+    height: 100px;
+    width: 100%;
+    font-size: 1rem;
+    margin: 15px;
+    margin-bottom: 10px;
+    padding: 15px;
+    overflow: hidden;
+}
+
+.listing__comment_form textarea:focus {
+    outline: none;
+}
+
+
+/* ensure create comment submit button stays 15px from bottom */
+.listing__comment_create_widget_btn_col {
+    margin-top: auto;
+    margin-bottom: 15px;
+}
+
+#listing__comment_create_widget_btn {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #99c2ff;
+    background-color: white;
+    border-radius: 50px;
+    text-decoration: none;
+    margin-left: -9px;
+    vertical-align: bottom;
+    color: #99c2ff;
+}
+
+#listing__comment_create_widget_btn:hover {
+    background-color: #007bff;
+}
+
+#listing__comment_create_widget_btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 1pt #007bff;
+}
