@@ -3,11 +3,16 @@
 /*
 $dark-blue: #007bff;
 $light-blue: #99c2ff;
+$very-light-blue: #f0f8ff;
 $red: #ca1515;
 $light-red: #CD5C5C;
 $grey: #ebebeb;
 $dark-grey: #888888;
-$black: #111111;
+TODO: update global black
+$black: #1a1110;
+$off-white: ghostwhite;
+$light-green: #e9fdf5;
+$dark-green: #008080;
 /*
 
 /* FONTS */
@@ -631,6 +636,78 @@ select[name = "category"] {
 }
 
 #listing__comment_create_widget_btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 1pt #007bff;
+}
+
+.listing__comment_item {
+    border: 1px solid #ebebeb;
+    border-radius: 15px;
+    width: 100%;
+    height: auto;
+}
+.listing__comment_container {
+    margin-top: 15px;
+    margin-left: 30px;
+    margin-bottom: 15px;
+    margin-right: 15px;
+}
+
+.listing__comment_item[data-owner = "me"] {
+    background: #e9fdf5;
+    border: 1px solid #66CDAA;
+}
+
+/* User's own name highlighted in dark green */
+.listing__comment_item[data-owner = "me"] div[class = "listing__comment_user"] {
+    color: #008080;
+}
+
+.listing__comment_item[data-owner = "op"] {
+    background: #f0f8ff;
+    border: 1px solid #99c2ff;
+}
+
+/* Original poster name in dark blue */
+.listing__comment_item[data-owner = "op"] div[class = "listing__comment_user"] {
+    color:  #007bff;
+}
+
+.listing__comment_item {
+    background: ghostwhite;
+    border: 1px solid #F5F5F5;
+}
+
+.listing__comment_item div[class = "listing__comment_user"] {
+    color: #1a1110;
+    font-weight: 500;
+}
+
+#listing__comment_reply_widget_btn {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #99c2ff
+}
+
+#listing__comment_reply_widget_btn {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #99c2ff;
+    border-radius: 50px;
+    text-decoration: none;
+    margin-left: -9px;
+    color: #99c2ff;
+    opacity: 35%;
+    margin-top: 15px;
+    margin-right: 5px;
+}
+
+#listing__comment_reply_widget_btn:hover {
+    background-color: #007bff;
+    opacity: 1;
+}
+
+#listing__comment_reply_widget_btn:focus {
     outline: none;
     box-shadow: 0 0 0 1pt #007bff;
 }
