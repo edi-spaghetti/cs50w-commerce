@@ -7,6 +7,7 @@ $red: #ca1515;
 $light-red: #CD5C5C;
 $grey: #ebebeb;
 $dark-grey: #888888;
+$black: #111111;
 /*
 
 /* FONTS */
@@ -538,4 +539,47 @@ select[name = "category"] {
 
 #listing__detail_close_widget_btn:focus {
     box-shadow: 0 0 0 1pt #CD5C5C;
+}
+
+/* COMMENTS SECTION */
+
+.listing_comments, .listing__comments_header, .listing__comments_create, .listing__comment {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.listing__comment_title {
+    font-size: 19px;
+    color: #111111;
+    position: relative;
+    width: 100%;
+    padding-bottom: 30px;
+}
+
+@media only screen and (min-width: 991px) {
+    .listing__comment_title:before {
+        width: calc(50% - 100px);
+    }
+
+    .listing__comment_title:after {
+        width: calc(50% - 100px);
+    }
+}
+
+.listing__comment_title:before {
+    position: absolute;
+    left: 0;
+    top: 12px;
+    height: 1px;
+    background: #ebebeb;
+    content: "";
+}
+
+.listing__comment_title:after {
+    position: absolute;
+    right: 0;
+    top: 12px;
+    height: 1px;
+    background: #ebebeb;
+    content: "";
 }
