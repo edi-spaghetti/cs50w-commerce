@@ -450,6 +450,7 @@ select[name = "category"] {
 
 .listing__detail_watch_widget_btn:focus, .listing__detail_unwatch_widget_btn:focus {
     outline: none;
+    box-shadow: 0 0 0 1pt #007bff;
 }
 
 .listing__detail_unwatch_widget_btn {
