@@ -74,21 +74,23 @@
 
                         <!-- Create Bid Widget -->
                         <div class="col-lg-6 listing__detail_bid_widget">
-                        {% if user != listing.owner %}
-                            <!-- TODO: invalid fields styling -->
-                            <form action="{% url 'create_bid' %}" method="post">
-                                {% csrf_token %}
-                                <input type="hidden" name="listing_id" value="{{ listing.id }}">
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <input type="number" name="value" step="{{ listing.bid_increment }}" min="{{ listing.new_bid_minimum }}" value="{{ listing.new_bid_minimum }}">
+                        {% if listing.is_open %}
+                            {% if user != listing.owner %}
+                                <!-- TODO: invalid fields styling -->
+                                <form action="{% url 'create_bid' %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <input type="number" name="value" step="{{ listing.bid_increment }}" min="{{ listing.new_bid_minimum }}" value="{{ listing.new_bid_minimum }}">
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <!-- TODO: not logged in user pop up -->
+                                            <button class="btn btn-outline-primary" type="submit">Bid</button>
+                                        </div>
                                     </div>
-                                    <div class="col-lg-6">
-                                        <!-- TODO: not logged in user pop up -->
-                                        <button class="btn btn-outline-primary" type="submit">Bid</button>
-                                    </div>
-                                </div>
-                            </form>
+                                </form>
+                            {% endif %}
                         {% endif %}
                         </div>
 
