@@ -22,7 +22,7 @@ $dark-grey: #888888;
 	font-style: normal;
 }
 
-.icon_star, .icon_currency, .icon_heart_alt, .icon_image, .social_share, .icon_mail_alt, .icon_bag_alt, .icon_close {
+.icon_star, .icon_currency, .icon_heart_alt, .icon_image, .social_share, .icon_mail_alt, .icon_bag_alt, .icon_close, .icon_chat_alt, .icon_comment_alt, .arrow_triangle-right {
 	font-family: 'ElegantIcons';
 	speak: none;
 	font-style: normal;
@@ -63,6 +63,18 @@ $dark-grey: #888888;
 
 .icon_close:before {
 	content: "\4d";
+}
+
+.icon_chat_alt:before {
+	content: "\77";
+}
+
+.icon_comment_alt:before {
+	content: "\76";
+}
+
+.arrow_triangle-right:before {
+	content: "\45";
 }
 
 /* NAVIGATION */

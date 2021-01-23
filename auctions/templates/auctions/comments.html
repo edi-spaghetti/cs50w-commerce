@@ -1,11 +1,28 @@
-<h3>Comments</h3>
-{% if user.is_authenticated %}
-    {% include "auctions/create_comment.html" %}
-{% endif %}
-<ul>
-{% for comment in listing.reverse_chronological_comments %}
-    {% include "auctions/comment_item.html" %}
-{% empty %}
-    <li>No comments so far, maybe you could make one!</li>
-{% endfor %}
-</ul>
+<section class="listing__comments">
+    <div class="container">
+
+        <!-- Header -->
+        <div class="row listing__comments_header">
+            <div class="col-lg-12 listing__comment_title">
+                Comments ({{ listing.reverse_chronological_comments|length }})
+            </div>
+        </div>
+
+        <!-- Create New Comment -->
+        <div class="row listing__comments_create">
+            <div class="col-lg-12">
+                {% include "auctions/widgets/create_comment.html" %}
+            </div>
+        </div>
+
+        <!-- Comment History -->
+        {% for comment in listing.reverse_chronological_comments %}
+        <div class="row listing__comment">
+            <div class="col-lg-12">
+                {% include "auctions/widgets/comment_item.html" %}
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+</section>

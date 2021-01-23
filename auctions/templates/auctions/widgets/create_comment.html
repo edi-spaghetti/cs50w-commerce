@@ -1,0 +1,22 @@
+<div class="listing__comment_form">
+    <form action="{% url 'create_comment' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="listing_id" value="{{ listing.id }}">
+        <div class="row">
+            <div class="col-lg-11">
+                <textarea name="content">
+                    {% if listing.reverse_chronological_comments %}
+                        Join the discussion...
+                    {% else %}
+                        First comment!
+                    {% endif %}
+                </textarea>
+            </div>
+            <div class="col-lg-1">
+                <button id="listing__comment_create_widget_btn" type="submit">
+                    <span class="arrow_triangle-right"></span>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

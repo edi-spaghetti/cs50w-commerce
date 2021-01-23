@@ -1,0 +1,27 @@
+<div class="listing__comment_item">
+    <div class="row">
+        <div class="col-lg-11">
+            {% if comment.author == user %}
+            <div data-owner="me" class="listing__comment_container">
+            {% elif comment.author == listing.owner %}
+            <div data-owner="op" class="listing__comment_container">
+            {% else %}
+            <div class="listing__comment_container">
+            {% endif %}
+                <div class="listing__comment_user">
+                    {{ comment.author.username }}
+                </div>
+                <div class="listing__comment_content">
+                    {{ comment.content }}
+                </div>
+                <div class="listing__comment_timestamp text-right">
+                    {{ comment.created_at }}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <!-- TODO: reply feature -->
+            <span class="icon_chat_alt"></span>
+        </div>
+    </div>
+</div>
