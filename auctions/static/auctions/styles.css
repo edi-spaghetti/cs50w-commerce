@@ -1,4 +1,12 @@
 
+/* COLOUR REFERENCE */
+/*
+$dark-blue: #007bff;
+$light-blue: #99c2ff;
+$red: #ca1515;
+$grey: #ebebeb;
+/*
+
 /* FONTS */
 
 @font-face {
@@ -143,7 +151,7 @@ ul li {
 
 /* LISTINGS and CATEGORIES */
 
-.listings, .categories, .new_listing {
+.listings, .categories, .new_listing, .listing__detail {
     padding-top: 60px;
     padding-bottom: 60px;
 }
@@ -366,4 +374,89 @@ select[name = "category"] {
     color: #99c2ff;
     border-color: #99c2ff;
     width: 15%;
+}
+
+
+/* LISTING ITEMS */
+
+.breadcrumb__links {
+    margin-bottom: 30px;
+}
+
+.listing__detail_large_photo_img {
+    object-fit: cover;
+    height: 350px;
+    width: min(100%, 400px);
+    margin-bottom: 30px;
+}
+
+.listing__detail_large_photo_img-default {
+    font-size: 200px;
+    color: #99c2ff;
+}
+
+.listing__detail_title, .listing__detail_description {
+    margin-bottom: 16px;
+}
+
+.listing__detail_title > span {
+    display: block;
+    font-size: 0.5rem;
+    margin-bottom: 10px;
+    margin-top: 15px;
+}
+
+.listing__detail_winner {
+    font-weight: 100;
+    color: #ca1515;
+}
+
+.listing__detail_price {
+    font-size: 30px;
+    font-weight: 600;
+    color: #ca1515;
+    margin-bottom: 30px;
+}
+
+.listing__detail_bid_widget > form > div > div > input {
+    width: 100%;
+    height: 50px;
+    font-size: 1rem;
+    border: 1px solid #ebebeb;
+    border-radius: 50px;
+    padding-left: 20px;
+    padding-right: 20px;
+
+}
+
+.listing__detail_bid_widget > form > div > div > button {
+    width: 100%;
+    height: 50px;
+    border-radius: 50px;
+}
+
+.listing__detail_watch_widget_btn > span, .listing__detail_unwatch_widget_btn > span {
+    color: #99c2ff;
+}
+
+.listing__detail_watch_widget_btn {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #ebebeb;
+    background-color: white;
+    border-radius: 50px;
+    text-decoration: none;
+}
+
+.listing__detail_watch_widget_btn:focus, .listing__detail_unwatch_widget_btn:focus {
+    outline: none;
+}
+
+.listing__detail_unwatch_widget_btn {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #ebebeb;
+    background-color: #007bff;
+    border-radius: 50px;
+    text-decoration: none;
 }

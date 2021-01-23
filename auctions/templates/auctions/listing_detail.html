@@ -21,8 +21,9 @@
 
             <!-- Photo -->
             <div class="col-lg-6">
-                <div class="listing__detail_img">
+                <div class="listing__detail_img text-center">
                 {% if listing.photo %}
+                    <!-- TODO: vertical alignment -->
                     <img class="listing__detail_large_photo_img" src="{{ listing.photo.url }}">
                 {% else %}
                     <span class="icon_image listing__detail_large_photo_img-default"></span>
@@ -33,75 +34,103 @@
             <!-- Text -->
             <div class="col-lg-6">
 
-                <!-- Header -->
-                <h3 class="listing__detail_title">
-                    {{ listing.title }}
-                    <!-- Auction Winner -->
-                    {% if listing.is_open %}
-                        <span class="listing__detail_open">Open</span>
-                        {% if user == listing.highest_bidder %}
-                        <span>Good luck {{ user.first_name }}, you're in the lead to win the auction!</span>
+                <div class="listing__detail_text">
+                    <!-- Header -->
+                    <h3 class="listing__detail_title">
+                        {{ listing.title }}
+                        <!-- Auction Winner -->
+                        {% if listing.is_open %}
+                            <span class="listing__detail_open">Open</span>
+                            {% if user == listing.highest_bidder %}
+                            <span class="listing__detail_winner">
+                                Good luck {{ user.first_name }}, you're in the
+                                lead to win the auction!
+                            </span>
+                            {% endif %}
+                        {% else %}
+                            <span class="listing__detail_closed">Closed</span>
+                            {% if user == listing.highest_bidder %}
+                            <span class="listing__detail_winner">
+                                Congratulations {{ user.first_name }}, you won
+                                the auction!
+                            </span>
+                            {% endif %}
                         {% endif %}
-                    {% else %}
-                        <span class="listing__detail_closed">Closed</span>
-                        {% if user == listing.highest_bidder %}
-                        <span>Congratulations {{ user.first_name }}, you won the auction!</span>
-                        {% endif %}
-                    {% endif %}
-                </h3>
+                    </h3>
 
-                <!-- Details -->
-                <div class="listing__detail_price">{{ listing.highest_bid }} ¥</div>
-                <div class="listing__detail_description">{{ listing.description }}</div>
+                    <!-- Details -->
+                    <div class="listing__detail_price">{{ listing.highest_bid }} ¥</div>
+                    <div class="listing__detail_description">{{ listing.description }}</div>
 
-                <!-- Forms -->
-                <div class="listing__detail_widget">
-                {% if user != listing.owner %}
+                    <!-- Forms -->
+                    <div class="row listing__detail_widget">
 
-                    <!-- Create Bid Widget -->
-                    <div class="listing__detail_bid_widget">
+                        <!-- Create Bid Widget -->
+                        <div class="col-lg-6 listing__detail_bid_widget">
+                        {% if user != listing.owner %}
                             <!-- TODO: invalid fields styling -->
                             <form action="{% url 'create_bid' %}" method="post">
                                 {% csrf_token %}
                                 <input type="hidden" name="listing_id" value="{{ listing.id }}">
-                                <input type="number" name="value" step="{{ listing.bid_increment }}" min="{{ listing.new_bid_minimum }}">
-                                <!-- TODO: not logged in user pop up -->
-                                <button class="btn btn-outline-primary" type="submit">Submit</button>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <input type="number" name="value" step="{{ listing.bid_increment }}" min="{{ listing.new_bid_minimum }}" value="{{ listing.new_bid_minimum }}">
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <!-- TODO: not logged in user pop up -->
+                                        <button class="btn btn-outline-primary" type="submit">Bid</button>
+                                    </div>
+                                </div>
                             </form>
+                        {% endif %}
+                        </div>
+
+                        <!-- Additional Features -->
+                        <div class="col-lg-6 listing__detail_additional_widget">
+                        {% if user != listing.owner %}
+                            {% if on_watchlist %}
+                            <div class="listing__detail_unwatch_widget">
+
+                                <!-- Remove from Watchlist -->
+                                <form action="{% url 'remove_watcher' %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                                    <button class="listing__detail_unwatch_widget_btn" type="submit">
+                                        <span class="icon_star"></span>
+                                    </button>
+                                </form>
+                            </div>
+                            {% else %}
+                            <div class="listing__detail_watch_widget">
+
+                                <!-- Add to Watchlist -->
+                                <form action="{% url 'add_watcher' %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                                    <button class="listing__detail_watch_widget_btn" type="submit">
+                                        <span class="icon_star"></span>
+                                    </button>
+                                </form>
+                            </div>
+                            {% endif %}
+
+                        {% elif user == listing.owner and listing.is_open %}
+
+                            <!-- Close Listing -->
+                            <div class="listing__detail_close_widget">
+                                <form action="{% url 'close_listing' %}"
+                                      method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                                    <button class="btn btn-danger" type="submit">
+                                        Close Auction
+                                    </button>
+                                </form>
+                            </div>
+
+                        {% endif %}
+                        </div>
                     </div>
-
-                    <!-- Add/Remove from Watchlist -->
-                    {% if on_watchlist %}
-                    <div class="listing__detail_unwatch_widget">
-                        <form action="{% url 'remove_watcher' %}" method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="listing_id" value="{{ listing.id }}">
-                            <button class="btn btn-link" type="submit">Remove From Watchlist</button>
-                        </form>
-                    </div>
-                    {% else %}
-                    <div class="listing__detail_watch_widget">
-                        <form action="{% url 'add_watcher' %}" method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="listing_id" value="{{ listing.id }}">
-                            <button class="btn btn-link" type="submit">Add To Watchlist</button>
-                        </form>
-                    </div>
-                    {% endif %}
-
-                {% elif user == listing.owner and listing.is_open %}
-
-                    <!-- Close Listing -->
-                    <div class="listing__detail_close_widget">
-                        <form action="{% url 'close_listing' %}" method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="listing_id" value="{{ listing.id }}">
-                            <button class="btn btn-danger" type="submit">Close Auction</button>
-                        </form>
-                    </div>
-
-                {% endif %}
-
                 </div>
             </div>
 
