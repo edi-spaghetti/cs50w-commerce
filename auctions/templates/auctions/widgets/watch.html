@@ -2,9 +2,9 @@
     <div class="listing__detail_unwatch_widget">
 
         <!-- Remove from Watchlist -->
-        <form action="{% url 'remove_watcher' %}" method="post">
+        <form action="{% url 'read_listing' listing.id %}" method="post">
             {% csrf_token %}
-            <input type="hidden" name="listing_id" value="{{ listing.id }}">
+            <input type="hidden" name="action" value="remove_watcher">
             <button id="listing__detail_unwatch_widget_btn" type="submit">
                 <span class="icon_star"></span>
             </button>
@@ -14,9 +14,9 @@
     <div class="listing__detail_watch_widget">
 
         <!-- Add to Watchlist -->
-        <form action="{% url 'add_watcher' %}" method="post">
+        <form action="{% url 'read_listing' listing.id %}" method="post">
             {% csrf_token %}
-            <input type="hidden" name="listing_id" value="{{ listing.id }}">
+            <input type="hidden" name="action" value="add_watcher">
             <button id="listing__detail_watch_widget_btn" type="submit">
                 <span class="icon_star"></span>
             </button>

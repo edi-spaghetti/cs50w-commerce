@@ -161,6 +161,61 @@ class NewListingForm(forms.ModelForm):
         }
 
 
+class WatcherForm(forms.Form):
+
+    add = forms.Field()
+    watcher = forms.Field()
+    listing = forms.Field()
+
+    def is_valid(self):
+
+        valid = True
+        add = self.data.get('add')
+        watcher = self.data.get('watcher')
+        listing = self.data.get('listing')
+
+        # First valid incoming data is correct type
+        if not isinstance(add, bool):
+            valid = False
+            self.add_error('add', f'Add must be bool - got {type(add)} {add}')
+        if not isinstance(watcher, User):
+            valid = False
+            self.add_error(
+                'watcher',
+                f'Watcher must be User - got {type(watcher)} {watcher}'
+            )
+        if not isinstance(listing, Listing):
+            valid = False
+            self.add_error(
+                'listing',
+                f'Listing must be Listing - got {type(listing)} {listing}'
+            )
+
+        # if data type validation passed we can check business logic
+        remove = not add
+        is_watcher = listing.watchers.filter(pk=watcher.id).exists()
+        own_listing = listing.owner == watcher
+
+        if valid:
+            if own_listing:
+                valid = False
+                msg = 'Cannot watch own listing'
+                self.add_error('watcher', msg)
+                logger.warning(watcher.id, msg)
+            elif add and is_watcher:
+                valid = False
+                msg = f'Already a watcher on Listing {listing.id}'
+                self.add_error('watcher', msg)
+                logger.warning(watcher.id, msg)
+            elif remove and not is_watcher:
+                valid = False
+                msg = f'Not a watcher on Listing {listing.id}'
+                self.add_error('watcher', msg)
+                logger.warning(watcher.id, msg)
+
+        return valid
+
+
 class NewBidForm(forms.ModelForm):
     class Meta:
         model = Bid
@@ -261,14 +316,18 @@ def create_listing(request):
 def read_listing(request, pk):
 
     # create a list of empty forms to begin
+    # TODO: rename this variable to not overwrite module name
     forms = {
         'bid': NewBidForm(),
+        'watcher': WatcherForm(),
         # TODO: close listing, add/remove watchlist, create comment
     }
 
     # mapping to help update form if submitted
     form_method_mapping = {
         'create_bid': 'bid',
+        'add_watcher': 'watcher',
+        'remove_watcher': 'watcher',
     }
 
     # First, validate the requested listing actually exists
@@ -405,87 +464,61 @@ def create_bid(request, pk):
 
 
 @login_required
-def add_watcher(request):
+def add_watcher(request, pk):
+    """
+    Adds current user as a watcher to requested listing, if valid request, else
+    returns with errors
+    :param request: Post request with data required to add a new watcher
+    :param pk: Listing id the new bid is being submitted to
+    :return: Validated watcher form
+    :rtype: :class:`WatcherForm`
+    """
 
-    if request.method == 'POST':
+    listing = Listing.objects.get(pk=pk)
+    form = WatcherForm({
+        'listing': listing,
+        'watcher': request.user,
+        'add': True
+    })
 
-        try:
-            listing = Listing.objects.get(pk=request.POST['listing_id'])
-
-            if not listing.watchers.filter(pk=request.user.id).exists():
-                listing.watchers.add(request.user)
-                listing.save()
-                logger.info(
-                    request.user.id,
-                    f'added as watcher to Listing: {listing.id}'
-                )
-            else:
-                logger.warning(
-                    request.user.id,
-                    f'attempted to add as watcher to '
-                    f'Listing: {listing.id} when already is watcher'
-                )
-
-        except (Listing.DoesNotExist, KeyError, ValueError):
-            # TODO: create 'something went wrong' page before redirect
-            logger.warning(
-                request.user.id,
-                f'failed to get listing {request.POST.get("listing_id")}'
-            )
-            return HttpResponseRedirect(reverse('index'))
-        else:
-            return HttpResponseRedirect(
-                reverse('read_listing', args=[listing.id]),
-            )
-
-    else:
-        logger.warning(
+    if form.is_valid():
+        listing.watchers.add(request.user)
+        listing.save()
+        logger.info(
             request.user.id,
-            f'Invalid GET request on add watcher'
+            f'Added as watcher to Listing: {listing.id}'
         )
-        return HttpResponse('Method not allowed', status=405)
+
+    return form
 
 
 @login_required
-def remove_watcher(request):
+def remove_watcher(request, pk):
+    """
+    Removes current user as a watcher to requested listing, if valid request,
+    else returns with errors
+    :param request: Post request with data required to remove a watcher
+    :param pk: Listing id the new bid is being submitted to
+    :return: Validated watcher form
+    :rtype: :class:`WatcherForm`
+    """
 
-    if request.method == 'POST':
+    listing = Listing.objects.get(pk=pk)
+    form = WatcherForm({
+        'listing': listing,
+        'watcher': request.user,
+        'add': False
+    })
 
-        try:
-            listing = Listing.objects.get(pk=request.POST['listing_id'])
-
-            if listing.watchers.filter(pk=request.user.id).exists():
-                listing.watchers.remove(request.user)
-                listing.save()
-                logger.info(
-                    request.user.id,
-                    f'removed as watcher on Listing: {listing.id}'
-                )
-            else:
-                logger.warning(
-                    request.user.id,
-                    f'attempted to remove as watcher on '
-                    f'Listing {listing.id} when not a watcher'
-                )
-
-        except (Listing.DoesNotExist, KeyError, ValueError):
-            # TODO: create 'something went wrong' page before redirect
-            logger.warning(
-                request.user.id,
-                f'failed to get listing {request.POST.get("listing_id")}'
-            )
-            return HttpResponseRedirect(reverse('index'))
-        else:
-            return HttpResponseRedirect(
-                reverse('read_listing', args=[listing.id]),
-            )
-
-    else:
-        logger.warning(
+    if form.is_valid():
+        listing.watchers.remove(request.user)
+        listing.save()
+        logger.info(
             request.user.id,
-            f'Invalid GET request on remove watcher'
+            f'Removed as watcher on Listing: {listing.id}'
         )
-        return HttpResponse('Method not allowed', status=405)
+
+    return form
 
 
 @login_required
