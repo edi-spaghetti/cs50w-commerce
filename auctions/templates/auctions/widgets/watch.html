@@ -5,9 +5,14 @@
         <form action="{% url 'read_listing' listing.id %}" method="post">
             {% csrf_token %}
             <input type="hidden" name="action" value="remove_watcher">
-            <button id="listing__detail_unwatch_widget_btn" type="submit">
+            <button {% if watcher.errors %}data-invalid="true"{% endif %} id="listing__detail_unwatch_widget_btn" type="submit">
                 <span class="icon_star"></span>
             </button>
+            {% if watcher.errors %}
+                {% if watcher.errors.watcher %}
+                    <span class="error_message">{{ watcher.errors.watcher|first }}</span>
+                {% endif %}
+            {% endif %}
         </form>
     </div>
 {% else %}
@@ -17,9 +22,14 @@
         <form action="{% url 'read_listing' listing.id %}" method="post">
             {% csrf_token %}
             <input type="hidden" name="action" value="add_watcher">
-            <button id="listing__detail_watch_widget_btn" type="submit">
+            <button {% if watcher.errors %}data-invalid="true"{% endif %} id="listing__detail_watch_widget_btn" type="submit">
                 <span class="icon_star"></span>
             </button>
+            {% if watcher.errors %}
+                {% if watcher.errors.watcher %}
+                    <span class="error_message">{{ watcher.errors.watcher|first }}</span>
+                {% endif %}
+            {% endif %}
         </form>
     </div>
 {% endif %}
