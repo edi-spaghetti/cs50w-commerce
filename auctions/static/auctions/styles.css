@@ -728,7 +728,7 @@ select[name = "category"] {
 }
 
 /* red border around invalid item */
-input[data-invalid = "true"] {
+input[data-invalid = "true"], button[data-invalid = "true"] {
     border-color: #CD5C5C87;
 }
 

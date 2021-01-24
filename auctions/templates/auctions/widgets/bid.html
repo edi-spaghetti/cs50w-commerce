@@ -15,8 +15,10 @@
                 {% endif %}
             </div>
             <div class="col-lg-6 listing__detail_bid_form_element">
-                <!-- TODO: not logged in user pop up -->
-                <button class="btn btn-outline-primary" type="submit">Bid</button>
+                <button {% if not user.is_authenticated %}data-invalid="true"{% endif %} class="btn btn-outline-primary" type="submit">Bid</button>
+                {% if not user.is_authenticated %}
+                    <span class="error_message">You must be logged in to make a bid</span>
+                {% endif %}
             </div>
         </div>
     </form>
