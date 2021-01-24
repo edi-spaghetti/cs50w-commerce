@@ -187,7 +187,11 @@ ul li {
 
 /* LISTINGS and CATEGORIES */
 
-.listings, .categories, .new_listing, .listing__detail {
+section[class = "listing"] {
+    background: ghostwhite;
+}
+
+.listings, .categories, .new_listing, .listing__detail, .listing {
     padding-top: 60px;
     padding-bottom: 60px;
 }
