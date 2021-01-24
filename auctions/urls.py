@@ -12,5 +12,4 @@ urlpatterns = [
     path('watchlist', views.read_watchlist, name='read_watchlist'),
     path('categories', views.read_categories, name='read_categories'),
     path('category/<int:pk>', views.read_category, name='read_category'),
-    path('create_comment', views.create_comment, name='create_comment'),
 ]

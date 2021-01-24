@@ -361,8 +361,8 @@ def read_listing(request, pk):
     forms_ = {
         'bid': NewBidForm(),
         'watcher': WatcherForm(),
-        'close': CloseListingForm()
-        # TODO: create comment
+        'close': CloseListingForm(),
+        'comment': NewCommentForm(),
     }
 
     # mapping to help update form if submitted
@@ -371,6 +371,7 @@ def read_listing(request, pk):
         'add_watcher': 'watcher',
         'remove_watcher': 'watcher',
         'close_listing': 'close',
+        'create_comment': 'comment'
     }
 
     # First, validate the requested listing actually exists
@@ -622,49 +623,28 @@ def read_category(request, pk):
 
 
 @login_required
-def create_comment(request):
+def create_comment(request, pk):
+    """
+    Adds a comment to requested listing, if valid request, else returns with
+    errors.
+    :param request: Post request with data required to add a new comment
+    :param pk: Listing id the new bid is being commented on
+    :return: Validated comment form
+    :rtype: :class:`NewCommentForm`
+    """
 
-    if request.method == 'POST':
-
-        try:
-            listing = Listing.objects.get(pk=request.POST['listing_id'])
-            content = request.POST['content']
-
-            comment = NewCommentForm({
+    listing = Listing.objects.get(pk=pk)
+    form = NewCommentForm({
                 'listing': listing,
                 'author': request.user,
-                'content': content
-            })
-            if comment.is_valid():
-                comment = comment.save()
-                logger.info(
-                    request.user.id,
-                    f'Created Comment {comment.id} on Listing: {listing.id}'
-                )
-            else:
-                logger.warning(
-                    request.user.id,
-                    f'attempted to create invalid comment on '
-                    f'Listing {listing.id}'
-                )
-        except (Listing.DoesNotExist, KeyError, ValueError):
-            # TODO: create 'something went wrong' page before redirect
-            logger.warning(
-                request.user.id,
-                f'failed to get listing {request.POST.get("listing_id")}'
-            )
-            return HttpResponseRedirect(reverse('index'))
-        else:
-            return HttpResponseRedirect(
-                reverse('read_listing', args=[listing.id]),
-            )
+                'content': request.POST.get('content')
+    })
 
-    else:
-        logger.warning(
+    if form.is_valid():
+        comment = form.save()
+        logger.info(
             request.user.id,
-            f'Invalid GET request on create comment'
+            f'Created Comment {comment.id} on Listing: {listing.id}'
         )
-        return HttpResponse('Method not allowed', status=405)
 
-
-# TODO: post_only_pathway wrapper function + decorators
+    return form

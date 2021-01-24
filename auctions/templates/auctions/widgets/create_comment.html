@@ -1,13 +1,18 @@
 <div class="listing__comment_form">
-    <form action="{% url 'create_comment' %}" method="post">
+    <form action="{% url 'read_listing' listing.id %}" method="post">
         {% csrf_token %}
-        <input type="hidden" name="listing_id" value="{{ listing.id }}">
+        <input type="hidden" name="action" value="create_comment">
         <div class="row">
             <div class="col-11 listing__comment_content_col">
                 {% if listing.reverse_chronological_comments %}
-                <textarea name="content">Join the discussion...</textarea>
+                <textarea {% if comment.errors %}data-invalid="true"{% endif %} name="content">{% if comment.errors %}{{ comment.data.content }}{% else %}Join the discussion...{% endif %}</textarea>
                 {% else %}
-                <textarea name="content">First comment!</textarea>
+                <textarea {% if comment.errors %}data-invalid="true"{% endif %} name="content">{% if comment.errors %}{{ comment.data.content }}{% else %}First comment!{% endif %}</textarea>
+                {% endif %}
+                {% if comment.errors %}
+                    {% if comment.errors.content %}
+                        <span class="error_message">{{ comment.errors.content|first }}</span>
+                    {% endif %}
                 {% endif %}
             </div>
             <div class="col-1 listing__comment_create_btn_col">
