@@ -431,6 +431,11 @@ select[name = "category"] {
     content: "";
 }
 
+.listing__detail_item {
+    background: ghostwhite;
+    padding: 25px;
+}
+
 .listing__detail_large_photo_img {
     object-fit: cover;
     height: 350px;
@@ -491,7 +496,7 @@ select[name = "category"] {
     border-radius: 50px;
     padding-left: 20px;
     padding-right: 20px;
-
+    outline: none;
 }
 
 .listing__detail_bid_widget button {
@@ -548,7 +553,7 @@ select[name = "category"] {
 
 /* COMMENTS SECTION */
 
-.listing_comments, .listing__comments_header, .listing__comments_create, .listing__comment {
+.listing_comments, .listing__comments_header, .listing__comment_create, .listing__comment {
     margin-top: 15px;
     margin-bottom: 15px;
 }
@@ -614,7 +619,7 @@ select[name = "category"] {
 
 
 /* ensure create comment submit button stays 15px from bottom */
-.listing__comment_create_widget_btn_col {
+.listing__comment_create_btn_col {
     margin-top: auto;
     margin-bottom: 15px;
 }

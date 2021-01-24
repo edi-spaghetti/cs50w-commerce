@@ -6,7 +6,7 @@
 <div data-owner="" class="listing__comment_item">
 {% endif %}
     <div class="row">
-        <div class="col-lg-11">
+        <div class="col-11 listing__comment_content_col">
             <div class="listing__comment_container">
                 <div class="listing__comment_user">
                     {{ comment.author.username }}
@@ -19,7 +19,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-1">
+        <div class="col-1 listing__comment_content_col">
             <!-- TODO: reply feature -->
             <button id="listing__comment_reply_widget_btn">
                 <span class="icon_chat_alt"></span>
