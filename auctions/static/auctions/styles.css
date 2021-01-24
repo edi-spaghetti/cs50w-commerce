@@ -719,3 +719,55 @@ select[name = "category"] {
     outline: none;
     box-shadow: 0 0 0 1pt #007bff;
 }
+
+/* ERRORS */
+
+[data-invalid = "true"] {
+    position: relative;
+    display: inline-block;
+}
+
+/* red border around invalid item */
+input[data-invalid = "true"] {
+    border-color: #CD5C5C87;
+}
+
+/* error message popup */
+[data-invalid = "true"] ~ span.error_message {
+    visibility: hidden;
+    position: absolute;
+
+    /* error below */
+    width: 250px;
+    top: 100%;
+    left: 50%;
+    margin-left: calc(-250px / 2);
+
+    /* transparent light red with dark red text */
+    background-color: #CD5C5C87;
+    color: #ca1515;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.6s;
+}
+
+[data-invalid = "true"] ~ span.error_message:after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    /* all transparent except bottom border */
+    border-color: transparent transparent #CD5C5C87 transparent;
+}
+
+[data-invalid = "true"]:hover ~ span.error_message {
+    visibility: visible;
+    opacity: 1;
+}

@@ -1,18 +1,16 @@
 <div class="listing__detail_bid_form">
-    <!-- TODO: invalid fields styling -->
     <form action="{% url 'read_listing' listing.id %}" method="post">
         {% csrf_token %}
         <input type="hidden" name="action" value="create_bid">
         <div class="row">
-            <div {% if bid.errors %}data-invalid="true"{% endif %} class="col-lg-6 listing__detail_bid_form_element">
-                <input type="number" name="value" step="{{ listing.bid_increment }}" min="{{ listing.new_bid_minimum }}" value="{{ listing.new_bid_minimum }}">
+            <div class="col-lg-6 listing__detail_bid_form_element">
+                <input {% if bid.errors %}data-invalid="true"{% endif %} type="number" name="value" step="{{ listing.bid_increment }}" min="{{ listing.new_bid_minimum }}" value="{{ listing.new_bid_minimum }}">
                 {% if bid.errors %}
-                    <!-- TODO: Error styling -->
                     {% if bid.errors.value %}
-                        <span class="listing__detail_bid_error_message">{{ bid.errors.value|first }}</span>
+                        <span class="error_message">{{ bid.errors.value|first }}</span>
                     {% endif %}
                     {% if bid.errors.bidder %}
-                        <span class="listing__detail_bid_error_message">{{ bid.errors.bidder|first }}</span>
+                        <span class="error_message">{{ bid.errors.bidder|first }}</span>
                     {% endif %}
                 {% endif %}
             </div>
