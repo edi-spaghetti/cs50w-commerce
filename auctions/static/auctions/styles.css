@@ -275,7 +275,7 @@ ul li {
     position: relative;
 }
 
-.category__text a:before {
+.category__text a[data-meta = "browse"]:before {
     position: absolute;
     left: 50%;
     bottom: -5px;
@@ -288,7 +288,7 @@ ul li {
     transition-duration: 0.75s;
 }
 
-.category__text a:after {
+.category__text a[data-meta = "browse"]:after {
     position: absolute;
     right: 50%;
     bottom: -5px;
@@ -301,13 +301,13 @@ ul li {
     transition-duration: 0.75s;
 }
 
-.category__text a:hover:before {
+.category__text a[data-meta = "browse"]:hover:before {
     width: 50%;
     left: 50%;
     opacity: 1;
 }
 
-.category__text a:hover:after {
+.category__text a[data-meta = "browse"]:hover:after {
     width: 50%;
     right: 50%;
     opacity: 1;
