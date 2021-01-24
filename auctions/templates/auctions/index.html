@@ -46,7 +46,7 @@
                     <div class="listings__top-categories">
                         <ul>
                             <li>
-                              <a href="{% url 'index' %}">All</a>
+                              <a href="{% url 'index' %}">Home</a>
                             </li>
                         {% for top_cat in top_categories %}
                             {% if top_cat %}
@@ -55,9 +55,8 @@
                             </li>
                             {% endif %}
                         {% endfor %}
-                            <!-- TODO: add support for misc (non-categorised listings) -->
                             <li>
-                                <a href="{% url 'read_category' 0 %}">Misc</a>
+                                <a href="{% url 'read_categories' %}">All</a>
                             </li>
                         </ul>
                     </div>
