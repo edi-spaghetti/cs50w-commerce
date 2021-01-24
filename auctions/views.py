@@ -1,3 +1,5 @@
+import sys
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
@@ -164,6 +166,40 @@ class NewBidForm(forms.ModelForm):
         model = Bid
         fields = ('value', 'listing', 'bidder')
 
+    def is_valid(self):
+        valid = super(NewBidForm, self).is_valid()
+
+        # create some convenience variables
+        bidder = self.data['bidder']
+        listing = self.data['listing']
+        value = self.data['value']
+
+        # check if bidder is listing owner
+        if bidder == listing.owner:
+            valid = False
+            self.add_error(
+                'bidder', 'You cannot add a bid to your own listings!'
+            )
+            logger.warning(
+                bidder.id,
+                f'Attempted bid on own listing: {listing}'
+            )
+
+        # check if bid is above minimum threshold
+        if not isinstance(value, int) or value < listing.new_bid_minimum:
+            valid = False
+            self.add_error(
+                'value',
+                f'Bid value must be a number above {listing.new_bid_minimum}'
+            )
+            logger.warning(
+                bidder.id,
+                f'Attempt invalid bid value: {value} '
+                f'(min: {listing.new_bid_minimum})'
+            )
+
+        return valid
+
 
 class NewCommentForm(forms.ModelForm):
     class Meta:
@@ -224,26 +260,59 @@ def create_listing(request):
 
 def read_listing(request, pk):
 
-    # TODO: move to listing detail forms to post method and return form with
-    #       errors if invalid
+    # create a list of empty forms to begin
+    forms = {
+        'bid': NewBidForm(),
+        # TODO: close listing, add/remove watchlist, create comment
+    }
+
+    # mapping to help update form if submitted
+    form_method_mapping = {
+        'create_bid': 'bid',
+    }
+
+    # First, validate the requested listing actually exists
     try:
         listing = Listing.objects.get(pk=pk)
-        watchlist = listing.watchers.filter(pk=request.user.id).exists()
     except Listing.DoesNotExist:
-        listing = None
-        watchlist = False
+
+        logger.warning(
+            request.user.id,
+            f'Attempted to load invalid listing: {pk}'
+        )
+        payload = {
+            'listing': None,
+            'on_watchlist': False,
+            'top_categories': Category.top_three()
+        }
+        payload.update(forms)
+
+        return render(request, 'auctions/listing.html', payload)
+
+    if request.method == 'POST':
+
+        # get action from post request
+        action = request.POST.get('action')
+        # only allow supported functions
+        if action in form_method_mapping.keys():
+            form = getattr(sys.modules[__name__], action)(request, pk)
+            form_key = form_method_mapping[action]
+            forms[form_key] = form
+        else:
+            logger.debug(
+                request.user.id,
+                f'Invalid listing post request: {action}'
+            )
+
+    payload = {
+        'listing': listing,
+        'on_watchlist': listing.watchers.filter(pk=request.user.id).exists(),
+        'top_categories': Category.top_three()
+    }
+    payload.update(forms)
 
     logger.debug(request.user.id, f'Loaded listing: {listing}')
-
-    top_three = Category.top_three()
-    logger.debug(request.user.id, f'view top 3 categories: {top_three}')
-
-    return render(request, 'auctions/listing.html', {
-        'listing': listing,
-        'on_watchlist': watchlist,
-        'insufficient_bid': False,
-        'top_categories': top_three,
-    })
+    return render(request, 'auctions/listing.html', payload)
 
 
 @login_required
@@ -292,68 +361,44 @@ def close_listing(request):
 
 
 @login_required
-def create_bid(request):
+def create_bid(request, pk):
+    """
+    Creates a bid on the requested listing.
+    Since this function is called from the read_listing page via POST method
+    only, we can assume the incoming request is a post request.
+    Sanitises and validates incoming data before creating, will return form
+    with errors if found.
+    :param request: Post request with data required to create a new bid
+    :param pk: Listing id the new bid is being submitted to
+    :return: Validated bid form
+    :rtype: :class:`NewBidForm`
+    """
 
-    if request.method == 'POST':
+    listing = Listing.objects.get(pk=pk)
 
-        try:
-            listing = Listing.objects.get(pk=request.POST['listing_id'])
+    # pre-sanitize bid value
+    try:
+        value = int(request.POST['value'])
+    except (KeyError, ValueError):
+        value = -1
 
-            bid = NewBidForm(
-                {
-                    'listing': listing,
-                    'bidder': request.user,
-                    'value': int(request.POST['value'])
-                }
-            )
+    bid = NewBidForm(
+        {
+            'listing': listing,
+            'bidder': request.user,
+            'value': value
+        }
+    )
 
-            if request.user != listing.owner:
-                if bid.is_valid():
-                    new_value = int(bid.cleaned_data['value'])
-                    if new_value >= listing.new_bid_minimum:
-                        bid = bid.save()
-                        logger.info(
-                            request.user.id,
-                            f'New Bid: <{bid.id}> {bid.value} '
-                            f'on Listing: {listing.id}'
-                        )
-                    else:
-                        # re-implementing read_listing template render
-                        # so I can pass an error message without having to
-                        logger.warning(
-                            request.user.id,
-                            f'Attempted bid below minimum'
-                        )
-
-                        top_three = Category.top_three()
-                        logger.debug(request.user.id,
-                                     f'view top 3 categories: {top_three}')
-
-                        return render(request, 'auctions/listing.html', {
-                            'listing': listing,
-                            'on_watchlist': listing.watchers.filter(
-                                pk=request.user.id).exists(),
-                            'insufficient_bid': True,
-                            'top_categories': top_three,
-                        })
-
-        except (Listing.DoesNotExist, KeyError, ValueError):
-            # TODO: create 'something went wrong' page before redirect
-            logger.warning(
-                request.user.id,
-                f'failed to get listing {request.POST.get("listing_id")}'
-            )
-            return HttpResponseRedirect(reverse('index'))
-        else:
-            return HttpResponseRedirect(
-                reverse('read_listing', args=[listing.id]),
-            )
-    else:
-        logger.warning(
+    if bid.is_valid():
+        bid_model = bid.save()
+        logger.info(
             request.user.id,
-            f'Invalid GET request on create bid'
+            f'New Bid: <{bid_model.id}> {bid_model.value} '
+            f'on Listing: {listing.id}'
         )
-        return HttpResponse('Method not allowed', status=405)
+
+    return bid
 
 
 # ================================ Watchlist ==================================
