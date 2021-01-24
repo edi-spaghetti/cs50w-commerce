@@ -316,8 +316,7 @@ def create_listing(request):
 def read_listing(request, pk):
 
     # create a list of empty forms to begin
-    # TODO: rename this variable to not overwrite module name
-    forms = {
+    forms_ = {
         'bid': NewBidForm(),
         'watcher': WatcherForm(),
         # TODO: close listing, add/remove watchlist, create comment
@@ -344,7 +343,7 @@ def read_listing(request, pk):
             'on_watchlist': False,
             'top_categories': Category.top_three()
         }
-        payload.update(forms)
+        payload.update(forms_)
 
         return render(request, 'auctions/listing.html', payload)
 
@@ -354,9 +353,13 @@ def read_listing(request, pk):
         action = request.POST.get('action')
         # only allow supported functions
         if action in form_method_mapping.keys():
+            logger.debug(
+                request.user.id,
+                f'Requesting action: {action}'
+            )
             form = getattr(sys.modules[__name__], action)(request, pk)
             form_key = form_method_mapping[action]
-            forms[form_key] = form
+            forms_[form_key] = form
         else:
             logger.debug(
                 request.user.id,
@@ -368,7 +371,7 @@ def read_listing(request, pk):
         'on_watchlist': listing.watchers.filter(pk=request.user.id).exists(),
         'top_categories': Category.top_three()
     }
-    payload.update(forms)
+    payload.update(forms_)
 
     logger.debug(request.user.id, f'Loaded listing: {listing}')
     return render(request, 'auctions/listing.html', payload)
