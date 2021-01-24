@@ -327,6 +327,7 @@ ul li {
     padding-right: 20px;
     margin-top: 10px;
     margin-bottom: 10px;
+    outline: none;
 }
 
 input[name = "title"] {
@@ -376,6 +377,7 @@ select[name = "category"] {
     border-radius: 15px;
     font-size: 14px;
     padding: 20px;
+    outline: none;
 }
 
 .new_listing__submit {
