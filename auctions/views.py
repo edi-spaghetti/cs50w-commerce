@@ -224,10 +224,14 @@ def create_listing(request):
 
 def read_listing(request, pk):
 
+    # TODO: move to listing detail forms to post method and return form with
+    #       errors if invalid
     try:
         listing = Listing.objects.get(pk=pk)
+        watchlist = listing.watchers.filter(pk=request.user.id).exists()
     except Listing.DoesNotExist:
         listing = None
+        watchlist = False
 
     logger.debug(request.user.id, f'Loaded listing: {listing}')
 
@@ -236,7 +240,7 @@ def read_listing(request, pk):
 
     return render(request, 'auctions/listing.html', {
         'listing': listing,
-        'on_watchlist': listing.watchers.filter(pk=request.user.id).exists(),
+        'on_watchlist': watchlist,
         'insufficient_bid': False,
         'top_categories': top_three,
     })
