@@ -216,24 +216,21 @@ ul li {
 }
 
 .listing__photo {
-    position: relative;
-    padding-top: 66.66%;
-}
-
-.listing__photo_img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
     height: 160px;
 }
 
+.listing__photo_img {
+    object-fit: cover;
+    height: 160px;
+    width: min(100%, 160px);
+    margin-bottom: 30px;
+}
+
 .listing__photo_img-default {
-    position: absolute;
-    top: 25%;
-    left: 33%;
     font-size: 100px;
     color: #99c2ff;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 .listing__text {
