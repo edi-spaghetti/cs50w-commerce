@@ -442,7 +442,6 @@ select[name = "category"] {
 .listing__detail_large_photo_img {
     object-fit: cover;
     height: 350px;
-    width: min(100%, 400px);
     margin-bottom: 30px;
 }
 

@@ -1,6 +1,8 @@
 import logging
 from uuid import uuid4
 
+from PIL import Image
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import Max, Sum
@@ -74,7 +76,7 @@ def get_misc():
 
 def rename_image_files(instance, filename):
 
-    new_file_name = f'listing/{uuid4().hex}'
+    new_file_name = f'listing/{uuid4().hex}.png'
     logger.info(f'Renaming filename: {filename} > : {new_file_name}')
 
     return new_file_name
@@ -162,6 +164,48 @@ class Listing(models.Model):
     @property
     def reverse_chronological_comments(self):
         return self.comments.order_by('-created_at')
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super(Listing, self).save(
+            force_insert, force_update, using, update_fields
+        )
+
+        if self.photo:
+            max_height = 350
+            max_width = 400
+            logger.debug(f'Resizing to height {max_height}')
+
+            path = self.photo.path
+            logger.debug(f'Opening image at path: {path}')
+            img = Image.open(path)
+
+            logger.debug('Calculating resized image')
+            height_percentage = max_height / float(img.size[1])
+            new_width = int(float(img.size[0]) * float(height_percentage))
+            img = img.resize((new_width, max_height), Image.ANTIALIAS)
+
+            logger.debug('Checking width')
+            width, height = img.size
+            if width > max_width:
+                margin = int((width - max_width) / 2)
+
+                # calculate new bbox to crop evenly either side of wide image
+                left = margin
+                top = 0
+                right = max_width + margin
+                bottom = height
+
+                logger.debug(
+                    f'Cropping to shape: '
+                    f'l={left}, t={top}, r={right}, b={bottom}'
+                )
+                img = img.crop((left, top, right, bottom))
+
+            logger.debug('Resize complete, overwriting')
+            # add png because we're renaming the files without an extension
+            img.save(path)
+            logger.debug('Saved.')
 
 
 class Bid(models.Model):
