@@ -216,6 +216,48 @@ class WatcherForm(forms.Form):
         return valid
 
 
+class CloseListingForm(forms.Form):
+
+    requester = forms.Field()
+    listing = forms.Field()
+
+    def is_valid(self):
+
+        valid = True
+        requester = self.data.get('requester')
+        listing = self.data.get('listing')
+
+        if not isinstance(requester, User):
+            valid = False
+            self.add_error(
+                'watcher',
+                f'Watcher must be User - got {type(requester)} {requester}'
+            )
+        if not isinstance(listing, Listing):
+            valid = False
+            self.add_error(
+                'listing',
+                f'Listing must be Listing - got {type(listing)} {listing}'
+            )
+
+        # if data type validation passed we can check business logic
+        own_listing = requester == listing.owner
+
+        if valid:
+            if not own_listing:
+                valid = False
+                msg = "Cannot close other user's listings!"
+                self.add_error('requester', msg)
+                logger.warning(requester.id, msg)
+            if not listing.is_open:
+                valid = False
+                msg = f'Listing is already closed'
+                self.add_error('listing', msg)
+                logger.warning(requester.id, msg)
+
+        return valid
+
+
 class NewBidForm(forms.ModelForm):
     class Meta:
         model = Bid
@@ -319,7 +361,8 @@ def read_listing(request, pk):
     forms_ = {
         'bid': NewBidForm(),
         'watcher': WatcherForm(),
-        # TODO: close listing, add/remove watchlist, create comment
+        'close': CloseListingForm()
+        # TODO: create comment
     }
 
     # mapping to help update form if submitted
@@ -327,6 +370,7 @@ def read_listing(request, pk):
         'create_bid': 'bid',
         'add_watcher': 'watcher',
         'remove_watcher': 'watcher',
+        'close_listing': 'close',
     }
 
     # First, validate the requested listing actually exists
@@ -367,7 +411,8 @@ def read_listing(request, pk):
             )
 
     payload = {
-        'listing': listing,
+        # get a fresh copy of listing object with updated data (if any)
+        'listing': Listing.objects.get(pk=pk),
         'on_watchlist': listing.watchers.filter(pk=request.user.id).exists(),
         'top_categories': Category.top_three()
     }
@@ -378,45 +423,32 @@ def read_listing(request, pk):
 
 
 @login_required
-def close_listing(request):
+def close_listing(request, pk):
+    """
+    Closes the requested listing. Sanitises and validates incoming data before
+    creating, will return form with errors if found.
+    :param request: Post request with data required to close a listing
+    :param pk: Id of the listing being closed
+    :return: Validated closing form
+    :rtype: :class:`CloseListingForm`
+    """
 
-    if request.method == 'POST':
+    listing = Listing.objects.get(pk=pk)
 
-        # TODO: error checking e.g. no listing id submitted /  not found
-        try:
-            listing = Listing.objects.get(pk=request.POST['listing_id'])
-        except (Listing.DoesNotExist, KeyError, ValueError):
-            # TODO: create 'something went wrong' page before redirect
-            logger.warning(
-                request.user.id,
-                f'failed to get listing {request.POST.get("listing_id")}'
-            )
-            return HttpResponseRedirect(reverse('index'))
-        else:
-            if request.user == listing.owner:
-                listing.is_open = False
-                listing.save()
-                logger.info(
-                    request.user.id,
-                    f'Closed Listing: {listing.id}'
-                )
-            else:
-                logger.warning(
-                    request.user.id,
-                    f'Attempted close listing owned by '
-                    f'User: {listing.owner.id}'
-                )
+    form = CloseListingForm({
+        'listing': listing,
+        'requester': request.user,
+    })
 
-            return HttpResponseRedirect(
-                reverse('read_listing', args=[listing.id])
-            )
-
-    else:
-        logger.warning(
+    if form.is_valid():
+        listing.is_open = False
+        listing.save()
+        logger.info(
             request.user.id,
-            f'Invalid GET request on close listing'
+            f'Closed Listing: {listing.id}'
         )
-        return HttpResponse('Method not allowed', status=405)
+
+    return form
 
 
 # ================================= Bids ======================================

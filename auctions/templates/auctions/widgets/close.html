@@ -1,9 +1,14 @@
 <div class="listing__detail_close_widget">
-    <form action="{% url 'close_listing' %}" method="post">
+    <form action="{% url 'read_listing' listing.id %}" method="post">
         {% csrf_token %}
-        <input type="hidden" name="listing_id" value="{{ listing.id }}">
-        <button id="listing__detail_close_widget_btn" type="submit">
+        <input type="hidden" name="action" value="close_listing">
+        <button {% if close.errors %}data-invalid="true"{% endif %} id="listing__detail_close_widget_btn" type="submit">
             <span class="icon_close"></span>
         </button>
+        {% if close.errors %}
+            {% if close.errors.requester %}
+                <span class="error_message">{{ close.errors.requester|first }}</span>
+            {% endif %}
+        {% endif %}
     </form>
 </div>
